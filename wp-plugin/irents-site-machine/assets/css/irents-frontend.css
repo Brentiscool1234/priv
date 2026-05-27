@@ -1,0 +1,494 @@
+/*
+ * iRents Site Machine — Frontend Styles
+ * Version: 1.0.0
+ *
+ * Uses CSS custom properties for brand colours, injected by PHP
+ * when irents_brand_colors option is set.
+ */
+
+/* ============================================================
+   CSS Custom Properties (defaults — overridden inline by PHP)
+   ============================================================ */
+:root {
+  --irents-primary:      #0073aa;
+  --irents-primary-dark: #005a87;
+  --irents-secondary:    #005a87;
+  --irents-accent:       #f0a500;
+  --irents-text:         #1a1a1a;
+  --irents-text-light:   #555555;
+  --irents-bg:           #ffffff;
+  --irents-bg-alt:       #f5f7fa;
+  --irents-border:       #dee2e6;
+  --irents-radius:       6px;
+  --irents-shadow:       0 2px 8px rgba(0, 0, 0, 0.12);
+  --irents-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.20);
+  --irents-transition:   0.25s ease;
+  --irents-max-width:    1200px;
+  --irents-gutter:       clamp(1rem, 4vw, 2rem);
+}
+
+/* ============================================================
+   Reset / Base
+   ============================================================ */
+.irents-page *,
+.irents-page *::before,
+.irents-page *::after {
+  box-sizing: border-box;
+}
+
+.irents-page {
+  color: var(--irents-text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Container
+   ============================================================ */
+.irents-container {
+  max-width: var(--irents-max-width);
+  margin-inline: auto;
+  padding-inline: var(--irents-gutter);
+}
+
+/* ============================================================
+   Hero Section
+   ============================================================ */
+.irents-hero {
+  background: linear-gradient(135deg, var(--irents-primary) 0%, var(--irents-primary-dark) 100%);
+  color: #ffffff;
+  padding: clamp(3rem, 8vw, 6rem) 0;
+  text-align: center;
+}
+
+.irents-hero .irents-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* ============================================================
+   H1
+   ============================================================ */
+.irents-h1 {
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: inherit;
+}
+
+.irents-hero__tagline {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  opacity: 0.9;
+  margin: 0;
+  max-width: 48ch;
+}
+
+.irents-hero__location-tag {
+  font-size: 1rem;
+  opacity: 0.85;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============================================================
+   Content Sections
+   ============================================================ */
+.irents-content {
+  padding: clamp(2.5rem, 6vw, 5rem) 0;
+  background: var(--irents-bg);
+}
+
+.irents-content--alt {
+  background: var(--irents-bg-alt);
+}
+
+.irents-content .irents-container > * + * {
+  margin-top: 1.25em;
+}
+
+/* ============================================================
+   Services Grid
+   ============================================================ */
+.irents-services {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  background: var(--irents-bg-alt);
+}
+
+.irents-services__heading,
+.irents-locations__heading {
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+  color: var(--irents-text);
+}
+
+.irents-services__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 1.25rem;
+}
+
+.irents-service-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: var(--irents-bg);
+  border: 1px solid var(--irents-border);
+  border-radius: var(--irents-radius);
+  box-shadow: var(--irents-shadow);
+  color: var(--irents-text);
+  text-decoration: none;
+  font-weight: 600;
+  transition: box-shadow var(--irents-transition),
+              border-color var(--irents-transition),
+              transform var(--irents-transition);
+}
+
+.irents-service-card:hover,
+.irents-service-card:focus-visible {
+  box-shadow: var(--irents-shadow-hover);
+  border-color: var(--irents-primary);
+  transform: translateY(-2px);
+  color: var(--irents-primary);
+  outline: none;
+}
+
+.irents-service-card__title {
+  flex: 1;
+}
+
+.irents-service-card__arrow {
+  margin-left: 0.75rem;
+  font-size: 1.1em;
+  transition: transform var(--irents-transition);
+}
+
+.irents-service-card:hover .irents-service-card__arrow {
+  transform: translateX(4px);
+}
+
+/* ============================================================
+   Locations Grid
+   ============================================================ */
+.irents-locations {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  background: var(--irents-bg);
+}
+
+.irents-locations__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+  gap: 0.75rem;
+}
+
+.irents-location-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  background: var(--irents-bg-alt);
+  border: 1px solid var(--irents-border);
+  border-radius: var(--irents-radius);
+  color: var(--irents-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background var(--irents-transition), color var(--irents-transition);
+}
+
+.irents-location-link:hover,
+.irents-location-link:focus-visible {
+  background: var(--irents-primary);
+  color: #ffffff;
+  border-color: var(--irents-primary);
+  outline: none;
+}
+
+/* ============================================================
+   FAQ Accordion
+   ============================================================ */
+.irents-faq {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  background: var(--irents-bg);
+}
+
+.irents-faq__item {
+  border: 1px solid var(--irents-border);
+  border-radius: var(--irents-radius);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.irents-faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--irents-bg-alt);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--irents-text);
+  text-align: left;
+  transition: background var(--irents-transition), color var(--irents-transition);
+}
+
+.irents-faq__question:hover,
+.irents-faq__question[aria-expanded="true"] {
+  background: var(--irents-primary);
+  color: #ffffff;
+}
+
+.irents-faq__icon {
+  flex-shrink: 0;
+  width: 1.25em;
+  height: 1.25em;
+  margin-left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--irents-transition);
+  font-style: normal;
+}
+
+.irents-faq__question[aria-expanded="true"] .irents-faq__icon {
+  transform: rotate(180deg);
+}
+
+.irents-faq__answer {
+  padding: 1rem 1.25rem;
+  display: none;
+  border-top: 1px solid var(--irents-border);
+  color: var(--irents-text-light);
+  line-height: 1.7;
+}
+
+.irents-faq__answer.is-open {
+  display: block;
+}
+
+/* ============================================================
+   CTA Section
+   ============================================================ */
+.irents-cta {
+  padding: clamp(2.5rem, 6vw, 5rem) 0;
+  background: var(--irents-primary);
+  color: #ffffff;
+  text-align: center;
+}
+
+.irents-cta .irents-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.irents-cta--bottom {
+  background: linear-gradient(135deg, var(--irents-accent) 0%, #d48800 100%);
+}
+
+.irents-cta__heading {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* ============================================================
+   CTA Buttons
+   ============================================================ */
+.irents-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85em 2em;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 2em;
+  text-decoration: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background var(--irents-transition),
+              color var(--irents-transition),
+              border-color var(--irents-transition),
+              transform var(--irents-transition),
+              box-shadow var(--irents-transition);
+}
+
+.irents-cta-button:focus-visible {
+  outline: 3px solid var(--irents-accent);
+  outline-offset: 2px;
+}
+
+.irents-cta-button--primary {
+  background: var(--irents-accent);
+  color: #ffffff;
+  border-color: var(--irents-accent);
+}
+
+.irents-cta-button--primary:hover {
+  background: #d48800;
+  border-color: #d48800;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.irents-cta-button--secondary {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.irents-cta-button--secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+}
+
+.irents-cta-button--phone,
+.irents-cta-button--email {
+  background: #ffffff;
+  color: var(--irents-primary);
+  border-color: #ffffff;
+}
+
+.irents-cta-button--phone:hover,
+.irents-cta-button--email:hover {
+  background: var(--irents-accent);
+  color: #ffffff;
+  border-color: var(--irents-accent);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   Breadcrumb
+   ============================================================ */
+.irents-breadcrumb {
+  background: var(--irents-bg-alt);
+  border-bottom: 1px solid var(--irents-border);
+  padding: 0.625rem 0;
+  font-size: 0.875rem;
+}
+
+.irents-breadcrumb__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.irents-breadcrumb__item {
+  display: flex;
+  align-items: center;
+  color: var(--irents-text-light);
+}
+
+.irents-breadcrumb__item + .irents-breadcrumb__item::before {
+  content: "›";
+  margin-right: 0.25rem;
+  color: var(--irents-border);
+}
+
+.irents-breadcrumb__item a {
+  color: var(--irents-primary);
+  text-decoration: none;
+}
+
+.irents-breadcrumb__item a:hover {
+  text-decoration: underline;
+}
+
+.irents-breadcrumb__item--current {
+  font-weight: 500;
+  color: var(--irents-text);
+}
+
+/* ============================================================
+   Contact Layout
+   ============================================================ */
+.irents-contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.irents-contact-info {
+  background: var(--irents-bg-alt);
+  border: 1px solid var(--irents-border);
+  border-radius: var(--irents-radius);
+  padding: 1.5rem;
+}
+
+.irents-contact-info__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.irents-contact-info__item {
+  margin: 0.75rem 0;
+  line-height: 1.4;
+}
+
+.irents-contact-info__item a {
+  color: var(--irents-primary);
+  text-decoration: none;
+}
+
+.irents-contact-info__item a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Hero button in service-location
+   ============================================================ */
+.irents-hero__cta-button {
+  font-size: 1.125rem;
+}
+
+/* ============================================================
+   Responsive — 768px
+   ============================================================ */
+@media (max-width: 768px) {
+  .irents-contact-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .irents-services__grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  }
+
+  .irents-hero {
+    padding: clamp(2rem, 6vw, 4rem) 0;
+  }
+}
+
+/* ============================================================
+   Responsive — 480px
+   ============================================================ */
+@media (max-width: 480px) {
+  .irents-services__grid,
+  .irents-locations__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .irents-cta-button {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .irents-breadcrumb__list {
+    font-size: 0.8125rem;
+  }
+}

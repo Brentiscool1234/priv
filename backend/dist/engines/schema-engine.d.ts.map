@@ -1,0 +1,1 @@
+{"version":3,"file":"schema-engine.d.ts","sourceRoot":"","sources":["../../src/engines/schema-engine.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,aAAa,EAAE,eAAe,EAAE,MAAM,UAAU,CAAC;AAG/D,KAAK,YAAY,GAAG,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,CAAC;AAE5C;;GAEG;AACH,wBAAgB,cAAc,CAC5B,IAAI,EAAE,aAAa,EACnB,OAAO,EAAE,eAAe,EACxB,MAAM,EAAE,MAAM,GACb,YAAY,EAAE,CA+ChB"}

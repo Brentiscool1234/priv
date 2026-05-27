@@ -1,0 +1,246 @@
+/*
+ * iRents Site Machine — Admin Styles
+ * Version: 1.0.0
+ */
+
+/* ============================================================
+   Page layout
+   ============================================================ */
+.ism-wrap {
+  max-width: 960px;
+}
+
+.ism-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ism-page-title .dashicons {
+  color: #0073aa;
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.ism-version {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #999;
+  background: #f0f0f1;
+  border-radius: 3px;
+  padding: 2px 7px;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   Dashboard stat cards
+   ============================================================ */
+.ism-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ism-card {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.ism-card h2,
+.ism-card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  color: #3c434a;
+}
+
+.ism-stat {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #0073aa;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.ism-stat--text {
+  font-size: 1.125rem;
+}
+
+/* ============================================================
+   Full-width cards (used for key, log, endpoints)
+   ============================================================ */
+.ism-card--key,
+.ism-wrap > .ism-card:not(.ism-card--stat) {
+  grid-column: 1 / -1;
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================================
+   API Key row
+   ============================================================ */
+.ism-key-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.ism-key-input {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.8125rem;
+  flex: 1 1 300px;
+  min-width: 200px;
+  letter-spacing: 0.05em;
+  background: #f6f7f7;
+}
+
+.ism-key-message {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  min-height: 1.2em;
+  color: #333;
+}
+
+.ism-key-message--ok    { color: #2d870a; }
+.ism-key-message--error { color: #d63638; }
+
+/* ============================================================
+   Endpoints table
+   ============================================================ */
+.ism-endpoints-table {
+  margin-top: 0.75rem;
+}
+
+.ism-method {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.ism-method--post { background: #1a56db; color: #fff; }
+.ism-method--get  { background: #0e9f6e; color: #fff; }
+
+/* ============================================================
+   Help text
+   ============================================================ */
+.ism-help {
+  color: #646970;
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+}
+
+/* ============================================================
+   Brand colour swatches
+   ============================================================ */
+.ism-color-swatches {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.ism-swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ism-swatch__block {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+
+.ism-swatch__label {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   Log table
+   ============================================================ */
+.ism-log-table-wrap {
+  max-height: 460px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  border: 1px solid #c3c4c7;
+  border-radius: 3px;
+}
+
+.ism-log-table {
+  border: none;
+  border-collapse: collapse;
+}
+
+.ism-log-time {
+  white-space: nowrap;
+  color: #646970;
+  font-size: 0.8125rem;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.ism-log-row--error td { background-color: #fff5f5 !important; }
+.ism-log-row--warning td { background-color: #fffbf0 !important; }
+
+.ism-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.ism-badge--info    { background: #e5f0fb; color: #0073aa; }
+.ism-badge--warning { background: #fff3cd; color: #8a6d00; }
+.ism-badge--error   { background: #fde8e8; color: #d63638; }
+.ism-badge--system  { background: #f0f0f1; color: #646970; }
+
+.ism-log-count {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #646970;
+  margin-left: 0.5rem;
+}
+
+.ism-clear-log-form {
+  margin-top: 0.75rem;
+}
+
+.ism-empty {
+  color: #646970;
+  font-style: italic;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media ( max-width: 600px ) {
+  .ism-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .ism-key-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ism-key-input {
+    width: 100%;
+  }
+}

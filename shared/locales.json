@@ -1,0 +1,319 @@
+{
+  "locales": {
+    "en-US": {
+      "code": "en-US",
+      "name": "English (US)",
+      "language": "en",
+      "country": "US",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "flag": "🇺🇸",
+      "formality": "informal",
+      "cta_style": "Get a Free Quote",
+      "date_format": "MM/DD/YYYY",
+      "phone_format": "+1 (xxx) xxx-xxxx",
+      "address_format": "{street}, {city}, {state} {zip}",
+      "slug_language": "en",
+      "common_terms": {
+        "about": "about",
+        "contact": "contact",
+        "faq": "faq",
+        "services": "services",
+        "locations": "locations",
+        "book_now": "Book Now",
+        "get_quote": "Get a Free Quote",
+        "learn_more": "Learn More"
+      }
+    },
+    "en-GB": {
+      "code": "en-GB",
+      "name": "English (UK)",
+      "language": "en",
+      "country": "GB",
+      "currency": "GBP",
+      "currency_symbol": "£",
+      "flag": "🇬🇧",
+      "formality": "semi-formal",
+      "cta_style": "Get a Free Quote",
+      "date_format": "DD/MM/YYYY",
+      "phone_format": "+44 xxxx xxxxxx",
+      "address_format": "{street}, {city}, {postcode}",
+      "slug_language": "en",
+      "common_terms": {
+        "about": "about",
+        "contact": "contact",
+        "faq": "faq",
+        "services": "services",
+        "locations": "locations",
+        "book_now": "Book Now",
+        "get_quote": "Get a Free Quote",
+        "learn_more": "Learn More"
+      }
+    },
+    "nl-BE": {
+      "code": "nl-BE",
+      "name": "Dutch (Belgium / Flemish)",
+      "language": "nl",
+      "country": "BE",
+      "region": "Vlaanderen",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "flag": "🇧🇪",
+      "formality": "professional",
+      "cta_style": "Vraag Offerte Aan",
+      "date_format": "DD/MM/YYYY",
+      "phone_format": "+32 xxx xx xx xx",
+      "address_format": "{street} {number}, {zip} {city}",
+      "slug_language": "nl",
+      "note": "Use Flemish vocabulary where it differs from Dutch-Netherlands. Avoid overly Dutch-Netherlands phrasing.",
+      "common_terms": {
+        "about": "over-ons",
+        "contact": "contact",
+        "faq": "veelgestelde-vragen",
+        "services": "diensten",
+        "locations": "locaties",
+        "book_now": "Boek Nu",
+        "get_quote": "Vraag Offerte Aan",
+        "learn_more": "Meer Info"
+      }
+    },
+    "nl-NL": {
+      "code": "nl-NL",
+      "name": "Dutch (Netherlands)",
+      "language": "nl",
+      "country": "NL",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "flag": "🇳🇱",
+      "formality": "direct",
+      "cta_style": "Vraag Offerte Aan",
+      "date_format": "DD-MM-YYYY",
+      "phone_format": "+31 xx xxx xxxx",
+      "address_format": "{street} {number}, {zip} {city}",
+      "slug_language": "nl",
+      "common_terms": {
+        "about": "over-ons",
+        "contact": "contact",
+        "faq": "veelgestelde-vragen",
+        "services": "diensten",
+        "locations": "locaties",
+        "book_now": "Boek Nu",
+        "get_quote": "Vraag Offerte Aan",
+        "learn_more": "Meer Info"
+      }
+    },
+    "fr-BE": {
+      "code": "fr-BE",
+      "name": "French (Belgium)",
+      "language": "fr",
+      "country": "BE",
+      "region": "Wallonie",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "flag": "🇧🇪",
+      "formality": "formal",
+      "cta_style": "Demander un Devis",
+      "date_format": "DD/MM/YYYY",
+      "phone_format": "+32 xxx xx xx xx",
+      "address_format": "{street} {number}, {zip} {city}",
+      "slug_language": "fr",
+      "common_terms": {
+        "about": "a-propos",
+        "contact": "contact",
+        "faq": "questions-frequentes",
+        "services": "services",
+        "locations": "zones-service",
+        "book_now": "Réserver",
+        "get_quote": "Demander un Devis",
+        "learn_more": "En Savoir Plus"
+      }
+    },
+    "fr-FR": {
+      "code": "fr-FR",
+      "name": "French (France)",
+      "language": "fr",
+      "country": "FR",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "flag": "🇫🇷",
+      "formality": "formal",
+      "cta_style": "Demander un Devis",
+      "date_format": "DD/MM/YYYY",
+      "phone_format": "+33 x xx xx xx xx",
+      "address_format": "{number} {street}, {zip} {city}",
+      "slug_language": "fr",
+      "common_terms": {
+        "about": "a-propos",
+        "contact": "contact",
+        "faq": "foire-aux-questions",
+        "services": "services",
+        "locations": "zones-intervention",
+        "book_now": "Réserver",
+        "get_quote": "Demander un Devis",
+        "learn_more": "En Savoir Plus"
+      }
+    },
+    "de-DE": {
+      "code": "de-DE",
+      "name": "German (Germany)",
+      "language": "de",
+      "country": "DE",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "flag": "🇩🇪",
+      "formality": "formal",
+      "cta_style": "Angebot Anfordern",
+      "date_format": "DD.MM.YYYY",
+      "phone_format": "+49 xxx xxxxxxxx",
+      "address_format": "{street} {number}, {zip} {city}",
+      "slug_language": "de",
+      "common_terms": {
+        "about": "ueber-uns",
+        "contact": "kontakt",
+        "faq": "haeufige-fragen",
+        "services": "leistungen",
+        "locations": "standorte",
+        "book_now": "Jetzt Buchen",
+        "get_quote": "Angebot Anfordern",
+        "learn_more": "Mehr Erfahren"
+      }
+    },
+    "de-BE": {
+      "code": "de-BE",
+      "name": "German (Belgium)",
+      "language": "de",
+      "country": "BE",
+      "region": "Ostbelgien",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "flag": "🇧🇪",
+      "formality": "formal",
+      "cta_style": "Angebot Anfordern",
+      "date_format": "DD.MM.YYYY",
+      "phone_format": "+32 xxx xx xx xx",
+      "address_format": "{street} {number}, {zip} {city}",
+      "slug_language": "de",
+      "common_terms": {
+        "about": "ueber-uns",
+        "contact": "kontakt",
+        "faq": "haeufige-fragen",
+        "services": "leistungen",
+        "locations": "standorte",
+        "book_now": "Jetzt Buchen",
+        "get_quote": "Angebot Anfordern",
+        "learn_more": "Mehr Erfahren"
+      }
+    }
+  },
+  "belgian_cities": {
+    "antwerp": {
+      "nl-BE": "Antwerpen",
+      "fr-BE": "Anvers",
+      "en-US": "Antwerp",
+      "en-GB": "Antwerp",
+      "de-BE": "Antwerpen"
+    },
+    "brussels": {
+      "nl-BE": "Brussel",
+      "fr-BE": "Bruxelles",
+      "en-US": "Brussels",
+      "en-GB": "Brussels",
+      "de-BE": "Brüssel"
+    },
+    "ghent": {
+      "nl-BE": "Gent",
+      "fr-BE": "Gand",
+      "en-US": "Ghent",
+      "en-GB": "Ghent",
+      "de-BE": "Gent"
+    },
+    "bruges": {
+      "nl-BE": "Brugge",
+      "fr-BE": "Bruges",
+      "en-US": "Bruges",
+      "en-GB": "Bruges",
+      "de-BE": "Brügge"
+    },
+    "liege": {
+      "nl-BE": "Luik",
+      "fr-BE": "Liège",
+      "en-US": "Liège",
+      "en-GB": "Liège",
+      "de-BE": "Lüttich"
+    },
+    "mons": {
+      "nl-BE": "Bergen",
+      "fr-BE": "Mons",
+      "en-US": "Mons",
+      "en-GB": "Mons",
+      "de-BE": "Bergen"
+    },
+    "namur": {
+      "nl-BE": "Namen",
+      "fr-BE": "Namur",
+      "en-US": "Namur",
+      "en-GB": "Namur",
+      "de-BE": "Namur"
+    },
+    "leuven": {
+      "nl-BE": "Leuven",
+      "fr-BE": "Louvain",
+      "en-US": "Leuven",
+      "en-GB": "Leuven",
+      "de-BE": "Löwen"
+    },
+    "mechelen": {
+      "nl-BE": "Mechelen",
+      "fr-BE": "Malines",
+      "en-US": "Mechelen",
+      "en-GB": "Mechelen",
+      "de-BE": "Mecheln"
+    },
+    "hasselt": {
+      "nl-BE": "Hasselt",
+      "fr-BE": "Hasselt",
+      "en-US": "Hasselt",
+      "en-GB": "Hasselt",
+      "de-BE": "Hasselt"
+    }
+  },
+  "page_type_slug_map": {
+    "homepage": {
+      "en-US": "",
+      "nl-BE": "",
+      "fr-BE": "",
+      "de-DE": "",
+      "de-BE": ""
+    },
+    "about": {
+      "en-US": "about",
+      "en-GB": "about",
+      "nl-BE": "over-ons",
+      "nl-NL": "over-ons",
+      "fr-BE": "a-propos",
+      "fr-FR": "a-propos",
+      "de-DE": "ueber-uns",
+      "de-BE": "ueber-uns"
+    },
+    "contact": {
+      "en-US": "contact",
+      "en-GB": "contact",
+      "nl-BE": "contact",
+      "nl-NL": "contact",
+      "fr-BE": "contact",
+      "fr-FR": "contact",
+      "de-DE": "kontakt",
+      "de-BE": "kontakt"
+    },
+    "faq": {
+      "en-US": "faq",
+      "en-GB": "faq",
+      "nl-BE": "veelgestelde-vragen",
+      "nl-NL": "veelgestelde-vragen",
+      "fr-BE": "questions-frequentes",
+      "fr-FR": "foire-aux-questions",
+      "de-DE": "haeufige-fragen",
+      "de-BE": "haeufige-fragen"
+    }
+  }
+}

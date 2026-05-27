@@ -1,0 +1,148 @@
+{
+  "templates": {
+    "homepage": {
+      "sections": [
+        "hero",
+        "trust_points",
+        "main_services",
+        "service_area",
+        "why_choose_us",
+        "reviews",
+        "faq",
+        "cta"
+      ],
+      "schema_types": ["WebSite", "LocalBusiness", "Organization", "FAQPage"],
+      "word_count_target": 800
+    },
+    "service": {
+      "sections": [
+        "hero",
+        "service_overview",
+        "use_cases",
+        "product_highlights",
+        "safety_trust",
+        "service_area_links",
+        "faq",
+        "cta"
+      ],
+      "schema_types": ["Service", "LocalBusiness", "FAQPage", "BreadcrumbList"],
+      "word_count_target": 700
+    },
+    "location": {
+      "sections": [
+        "hero",
+        "local_intro",
+        "services_available",
+        "events_served",
+        "delivery_note",
+        "city_service_links",
+        "faq",
+        "cta"
+      ],
+      "schema_types": ["LocalBusiness", "FAQPage", "BreadcrumbList"],
+      "word_count_target": 600
+    },
+    "service_location": {
+      "sections": [
+        "hero",
+        "service_in_city",
+        "who_is_it_for",
+        "why_book",
+        "related_services",
+        "local_delivery_note",
+        "faq",
+        "cta"
+      ],
+      "schema_types": ["Service", "LocalBusiness", "FAQPage", "BreadcrumbList"],
+      "word_count_target": 550
+    },
+    "about": {
+      "sections": [
+        "hero",
+        "our_story",
+        "team",
+        "values",
+        "service_area",
+        "cta"
+      ],
+      "schema_types": ["Organization", "LocalBusiness", "BreadcrumbList"],
+      "word_count_target": 500
+    },
+    "faq": {
+      "sections": [
+        "hero",
+        "faq_list",
+        "contact_cta"
+      ],
+      "schema_types": ["FAQPage", "BreadcrumbList"],
+      "word_count_target": 800
+    },
+    "contact": {
+      "sections": [
+        "hero",
+        "contact_form",
+        "contact_info",
+        "service_area_map",
+        "faq"
+      ],
+      "schema_types": ["LocalBusiness", "BreadcrumbList"],
+      "word_count_target": 300
+    }
+  },
+  "page_types": [
+    "homepage",
+    "service",
+    "location",
+    "service_location",
+    "about",
+    "faq",
+    "contact"
+  ],
+  "industries": {
+    "party_rentals": {
+      "label": "Party Rentals",
+      "example_services_en": ["Bounce House Rentals", "Water Slide Rentals", "Obstacle Course Rentals", "Tent Rentals", "Table and Chair Rentals"],
+      "example_services_nl": ["Springkastelen Huren", "Waterglijbaan Huren", "Stormbaan Huren", "Partytent Huren", "Tafels en Stoelen Huren"]
+    },
+    "dumpster_rentals": {
+      "label": "Dumpster Rentals",
+      "example_services_en": ["Roll-Off Dumpster Rentals", "Residential Dumpster Rentals", "Commercial Dumpster Rentals", "Construction Dumpster Rentals"]
+    },
+    "tree_service": {
+      "label": "Tree Service",
+      "example_services_en": ["Tree Removal", "Tree Trimming", "Stump Grinding", "Emergency Tree Service", "Land Clearing"]
+    },
+    "pool_installation": {
+      "label": "Pool Installation",
+      "example_services_en": ["In-Ground Pool Installation", "Above-Ground Pool Installation", "Pool Resurfacing", "Pool Repair", "Pool Maintenance"]
+    },
+    "event_rentals": {
+      "label": "Event Rentals",
+      "example_services_en": ["Tent Rentals", "Chair Rentals", "Table Rentals", "Linen Rentals", "Stage Rentals", "Dance Floor Rentals"]
+    },
+    "roofing": {
+      "label": "Roofing",
+      "example_services_en": ["Roof Replacement", "Roof Repair", "Gutter Installation", "Roof Inspection", "Emergency Roof Repair"]
+    },
+    "hvac": {
+      "label": "HVAC",
+      "example_services_en": ["AC Installation", "Furnace Repair", "HVAC Maintenance", "Duct Cleaning", "Heat Pump Installation"]
+    },
+    "plumbing": {
+      "label": "Plumbing",
+      "example_services_en": ["Emergency Plumbing", "Drain Cleaning", "Water Heater Installation", "Pipe Repair", "Sewer Line Repair"]
+    },
+    "landscaping": {
+      "label": "Landscaping",
+      "example_services_en": ["Lawn Care", "Landscape Design", "Sod Installation", "Irrigation Systems", "Mulching", "Hardscaping"]
+    },
+    "cleaning_services": {
+      "label": "Cleaning Services",
+      "example_services_en": ["House Cleaning", "Move-Out Cleaning", "Commercial Cleaning", "Deep Cleaning", "Window Cleaning"]
+    },
+    "pest_control": {
+      "label": "Pest Control",
+      "example_services_en": ["Termite Treatment", "Rodent Control", "Bed Bug Removal", "Ant Control", "Mosquito Treatment"]
+    }
+  }
+}
