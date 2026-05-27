@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { v4 as uuidv4 } from 'uuid';
 import type { CreateServiceBody } from '../types';
 import { slugify } from '../engines/locale-engine';
@@ -44,7 +44,7 @@ servicesRouter.post('/import-csv', (req, res) => {
     INSERT INTO services (id, project_id, name, locale, primary_keyword, secondary_keywords, slug, description, priority, template_type, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const tx = db.transaction(() => {
+  runTransaction(db, () => {
     for (const row of rows) {
       if (!row.name) continue;
       const id = uuidv4();
@@ -53,7 +53,6 @@ servicesRouter.post('/import-csv', (req, res) => {
       created.push({ id, name: row.name, slug });
     }
   });
-  tx();
   res.status(201).json({ created: created.length, items: created });
 });
 

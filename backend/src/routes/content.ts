@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { generateBatch } from '../engines/content-engine';
 import { generateSchema } from '../engines/schema-engine';
 import { logger } from '../lib/logger';
@@ -51,7 +51,7 @@ contentRouter.post('/generate', async (req, res) => {
     const now = new Date().toISOString();
 
     // Pre-insert stub generated_pages rows
-    const initTx = db.transaction(() => {
+    runTransaction(db, () => {
       for (const brief of parsedBriefs) {
         const existing = db.prepare('SELECT id FROM generated_pages WHERE brief_id = ?').get(brief.id);
         if (!existing) {
@@ -65,7 +65,6 @@ contentRouter.post('/generate', async (req, res) => {
         }
       }
     });
-    initTx();
 
     res.json({ queued: parsedBriefs.length, message: 'Content generation started. Poll GET /content for status.' });
 
@@ -73,7 +72,7 @@ contentRouter.post('/generate', async (req, res) => {
       for (const [locale, localeBriefs] of byLocale) {
         try {
           const results = await generateBatch(localeBriefs, defaultProfile, locale);
-          const updateTx = db.transaction(() => {
+          runTransaction(db, () => {
             for (const result of results) {
               const brief = localeBriefs.find((b) => b.id === result.brief_id);
               if (!brief) continue;
@@ -105,7 +104,6 @@ contentRouter.post('/generate', async (req, res) => {
               }
             }
           });
-          updateTx();
           logger.info(`Content gen locale ${locale}: ${results.filter((r) => r.success).length}/${results.length} succeeded`);
         } catch (err) {
           logger.error(`Content generation error for locale ${locale}`, { err });

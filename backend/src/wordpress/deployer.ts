@@ -74,7 +74,7 @@ export async function deployPages(
     deployment.pages_created,
     deployment.pages_failed,
     JSON.stringify(deployment.log),
-    deployment.started_at,
+    deployment.started_at ?? null,
     deployment.created_at
   );
 

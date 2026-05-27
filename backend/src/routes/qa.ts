@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { runQAChecks } from '../qa/checks';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,7 +28,7 @@ qaRouter.post('/run', async (req, res) => {
   let pass = 0, warn = 0, fail = 0;
   const allSlugs = pages.map((p: any) => p.slug);
 
-  const tx = db.transaction(() => {
+  runTransaction(db, () => {
     for (const page of pages) {
       const issues = runQAChecks(page, allSlugs, pages);
       for (const issue of issues) {
@@ -39,7 +39,6 @@ qaRouter.post('/run', async (req, res) => {
       }
     }
   });
-  tx();
 
   db.prepare('UPDATE qa_reports SET status = ?, pass_count = ?, warning_count = ?, fail_count = ? WHERE id = ?')
     .run('done', pass, warn, fail, reportId);

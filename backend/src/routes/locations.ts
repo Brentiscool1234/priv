@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { v4 as uuidv4 } from 'uuid';
 import type { CreateLocationBody } from '../types';
 
@@ -39,7 +39,7 @@ locationsRouter.post('/import-csv', (req, res) => {
     INSERT INTO locations (id, project_id, city, state_province, country, region, priority, included, locale, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const tx = db.transaction(() => {
+  runTransaction(db, () => {
     for (const row of rows) {
       if (!row.city) continue;
       const id = uuidv4();
@@ -47,7 +47,6 @@ locationsRouter.post('/import-csv', (req, res) => {
       created.push({ id, city: row.city });
     }
   });
-  tx();
   res.status(201).json({ created: created.length, items: created });
 });
 

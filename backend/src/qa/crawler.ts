@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { runQAChecks } from './checks';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { logger } from '../lib/logger';
 import type { GeneratedPage, QAReport, QAIssue } from '../types';
 
@@ -95,8 +95,8 @@ export async function runQAForProject(
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
   );
 
-  const insertMany = db.transaction((issues: QAIssue[]) => {
-    for (const issue of issues) {
+  runTransaction(db, () => {
+    for (const issue of allIssues) {
       insertIssue.run(
         issue.id,
         issue.report_id,
@@ -109,8 +109,6 @@ export async function runQAForProject(
       );
     }
   });
-
-  insertMany(allIssues);
 
   // ── Finalize report ────────────────────────────────────────────────────────
   report.pass_count = passCount;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { generateBrief } from '../engines/brief-engine';
 import type { PagePlan, BusinessProfile, Service, Location } from '../types';
 
@@ -18,16 +18,16 @@ briefsRouter.post('/generate', (req, res) => {
 
   let plansQuery = "SELECT * FROM page_plans WHERE project_id = ? AND status = 'approved'";
   const plans: PagePlan[] = plan_ids
-    ? (db.prepare(`SELECT * FROM page_plans WHERE project_id = ? AND id IN (${plan_ids.map(() => '?').join(',')})`).all(projectId, ...plan_ids) as PagePlan[])
-    : (db.prepare(plansQuery).all(projectId) as PagePlan[]);
+    ? (db.prepare(`SELECT * FROM page_plans WHERE project_id = ? AND id IN (${plan_ids.map(() => '?').join(',')})`).all(projectId, ...plan_ids) as unknown as PagePlan[])
+    : (db.prepare(plansQuery).all(projectId) as unknown as PagePlan[]);
 
   if (plans.length === 0) {
     return res.status(400).json({ error: 'No approved page plans found. Approve pages in the sitemap first.' });
   }
 
-  const profile = db.prepare('SELECT * FROM business_profiles WHERE project_id = ?').get(projectId) as BusinessProfile | undefined;
-  const services = (db.prepare('SELECT * FROM services WHERE project_id = ?').all(projectId) as Service[]).map(parseService);
-  const locations = (db.prepare('SELECT * FROM locations WHERE project_id = ?').all(projectId) as Location[]).map(parseLocation);
+  const profile = db.prepare('SELECT * FROM business_profiles WHERE project_id = ?').get(projectId) as unknown as BusinessProfile | undefined;
+  const services = (db.prepare('SELECT * FROM services WHERE project_id = ?').all(projectId) as unknown as Service[]).map(parseService);
+  const locations = (db.prepare('SELECT * FROM locations WHERE project_id = ?').all(projectId) as unknown as Location[]).map(parseLocation);
 
   const serviceMap = new Map(services.map((s) => [s.id, s]));
   const locationMap = new Map(locations.map((l) => [l.id, l]));
@@ -43,7 +43,7 @@ briefsRouter.post('/generate', (req, res) => {
     : { id: '', project_id: projectId, trust_points: [], brand_colors: {}, data: {} };
 
   const generated: unknown[] = [];
-  const tx = db.transaction(() => {
+  runTransaction(db, () => {
     for (const plan of plans) {
       const brief = generateBrief({
         plan,
@@ -67,7 +67,6 @@ briefsRouter.post('/generate', (req, res) => {
       generated.push({ id: brief.id, slug: brief.slug, h1: brief.h1 });
     }
   });
-  tx();
   res.json({ generated: generated.length, briefs: generated });
 });
 

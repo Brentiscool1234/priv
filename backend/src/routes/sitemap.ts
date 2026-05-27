@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db/client';
+import { getDb, runTransaction } from '../db/client';
 import { generateSitemap } from '../engines/sitemap-engine';
 import type { Project, Service, Location, PagePlan } from '../types';
 
@@ -13,12 +13,12 @@ sitemapRouter.get('/', (req, res) => {
 
 sitemapRouter.post('/generate', (req, res) => {
   const db = getDb();
-  const project = db.prepare('SELECT * FROM projects WHERE id = ?').get(( req.params as any).id) as Project | undefined;
+  const project = db.prepare('SELECT * FROM projects WHERE id = ?').get(( req.params as any).id) as unknown as Project | undefined;
   if (!project) return res.status(404).json({ error: 'Project not found' });
 
   const rawProject = { ...project, secondary_locales: tryParse(project.secondary_locales, []) } as Project;
-  const services = (db.prepare('SELECT * FROM services WHERE project_id = ?').all(( req.params as any).id) as Service[]).map(parseService);
-  const locations = (db.prepare('SELECT * FROM locations WHERE project_id = ? AND included = 1').all(( req.params as any).id) as Location[]).map(parseLocation);
+  const services = (db.prepare('SELECT * FROM services WHERE project_id = ?').all(( req.params as any).id) as unknown as Service[]).map(parseService);
+  const locations = (db.prepare('SELECT * FROM locations WHERE project_id = ? AND included = 1').all(( req.params as any).id) as unknown as Location[]).map(parseLocation);
 
   const opts = {
     max_pages: req.body?.max_pages ?? 200,
@@ -34,12 +34,11 @@ sitemapRouter.post('/generate', (req, res) => {
     INSERT INTO page_plans (id, project_id, page_type, locale, service_id, location_id, slug, status, priority, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const tx = db.transaction(() => {
+  runTransaction(db, () => {
     for (const p of plans) {
       insertStmt.run(p.id, p.project_id, p.page_type, p.locale, p.service_id ?? null, p.location_id ?? null, p.slug, p.status, p.priority, p.created_at);
     }
   });
-  tx();
 
   res.json({ generated: plans.length, plans });
 });
