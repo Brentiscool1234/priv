@@ -39,7 +39,16 @@ exports.projectsRouter.get('/:id', (req, res) => {
     if (!project)
         return res.status(404).json({ error: 'Project not found' });
     const profile = db.prepare('SELECT * FROM business_profiles WHERE project_id = ?').get(req.params.id);
-    res.json({ ...parseProject(project), profile: profile ? parseProfile(profile) : null });
+    const services = db.prepare('SELECT * FROM services WHERE project_id = ? ORDER BY priority DESC, created_at ASC').all(req.params.id);
+    const locations = db.prepare('SELECT * FROM locations WHERE project_id = ? ORDER BY priority DESC, city ASC').all(req.params.id);
+    const wpConnection = db.prepare('SELECT * FROM wordpress_connections WHERE project_id = ? ORDER BY created_at DESC LIMIT 1').get(req.params.id);
+    res.json({
+        ...parseProject(project),
+        profile: profile ? parseProfile(profile) : null,
+        services: services.map((s) => ({ ...s, secondary_keywords: tryParse(s.secondary_keywords, []) })),
+        locations: locations.map((l) => ({ ...l, included: Boolean(l.included) })),
+        wp_connection: wpConnection ?? null,
+    });
 });
 exports.projectsRouter.put('/:id', (req, res) => {
     const db = (0, client_1.getDb)();
