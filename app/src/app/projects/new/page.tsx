@@ -142,6 +142,9 @@ export default function NewProjectPage() {
     );
   };
 
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
   const testConnection = async () => {
     setConnectionStatus('testing');
     await new Promise((r) => setTimeout(r, 1500));
@@ -149,8 +152,70 @@ export default function NewProjectPage() {
   };
 
   const handleCreate = async () => {
-    // In a real app, POST to /api/projects
-    router.push('/projects');
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const { api } = await import('@/lib/api');
+
+      // 1. Create the project
+      const locale = primaryLocale.startsWith('nl') || primaryLocale.startsWith('fr') || primaryLocale.startsWith('de') ? 'BE' :
+                     primaryLocale === 'en-GB' ? 'GB' : 'US';
+      const project = await api.projects.create({
+        business_name: businessName || 'New Project',
+        industry,
+        website_url: websiteUrl || undefined,
+        wordpress_url: wpUrl || undefined,
+        primary_locale: primaryLocale,
+        secondary_locales: secondaryLocales,
+        country: locale,
+        profile: {
+          business_name: businessName,
+          description: description || undefined,
+          phone: phone || undefined,
+          email: email || undefined,
+          booking_url: bookingUrl || undefined,
+          years_in_business: yearsInBusiness ? Number(yearsInBusiness) : undefined,
+          tone,
+        },
+      });
+
+      const projectId = project.id;
+
+      // 2. Save services
+      const validServices = services.filter((s) => s.name.trim());
+      for (const svc of validServices) {
+        await api.services.create(projectId, {
+          name: svc.name.trim(),
+          locale: primaryLocale,
+          description: svc.description || undefined,
+        });
+      }
+
+      // 3. Save locations
+      const validLocations = locations.filter((l) => l.city.trim());
+      for (const loc of validLocations) {
+        await api.locations.create(projectId, {
+          city: loc.city.trim(),
+          state_province: loc.state || undefined,
+          locale: primaryLocale,
+        });
+      }
+
+      // 4. Save WordPress connection if provided
+      if (wpUrl && pluginKey) {
+        try {
+          await api.wordpress.connect(projectId, { wp_url: wpUrl, plugin_key: pluginKey });
+        } catch {
+          // Non-fatal: WP connection failure shouldn't block project creation
+        }
+      }
+
+      router.push(`/projects/${projectId}`);
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'Failed to create project. Is the backend running?');
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -540,9 +605,17 @@ export default function NewProjectPage() {
         )}
       </div>
 
+      {/* Error message */}
+      {createError && (
+        <div className="mt-4 bg-red-900/40 border border-red-500 text-red-300 rounded-lg px-4 py-3 text-sm">
+          {createError}
+        </div>
+      )}
+
       {/* Navigation buttons */}
       <div className="flex items-center justify-between mt-6">
         <button
+          type="button"
           onClick={() => setStep(Math.max(1, step - 1))}
           disabled={step === 1}
           className="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 px-4 py-2 rounded-md text-sm font-medium transition-colors"
@@ -554,6 +627,7 @@ export default function NewProjectPage() {
         </button>
         {step < STEPS.length ? (
           <button
+            type="button"
             onClick={() => setStep(Math.min(STEPS.length, step + 1))}
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
           >
@@ -564,13 +638,27 @@ export default function NewProjectPage() {
           </button>
         ) : (
           <button
+            type="button"
             onClick={handleCreate}
-            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors"
+            disabled={creating}
+            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed text-white px-5 py-2 rounded-md text-sm font-medium transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            Create Project
+            {creating ? (
+              <>
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Creating...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Create Project
+              </>
+            )}
           </button>
         )}
       </div>

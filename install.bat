@@ -7,7 +7,7 @@ echo.
 where node >nul 2>&1
 if %errorlevel% neq 0 (
   echo ERROR: Node.js is not installed or not in PATH.
-  echo Download from https://nodejs.org/ ^(LTS version^)
+  echo Download from https://nodejs.org/ ^(v20 or newer^)
   pause
   exit /b 1
 )
@@ -21,22 +21,7 @@ cd /d "%~dp0backend"
 npm install
 if %errorlevel% neq 0 (
   echo.
-  echo =============================================
-  echo  INSTALL FAILED
-  echo =============================================
-  echo.
-  echo If you see an error about "better-sqlite3" or "node-gyp":
-  echo.
-  echo   Option A ^(easiest^): Install Visual C++ Build Tools
-  echo   Run PowerShell as Administrator and type:
-  echo     npm install --global windows-build-tools
-  echo.
-  echo   Option B: Download the installer manually:
-  echo   https://visualstudio.microsoft.com/visual-cpp-build-tools/
-  echo   Select "Desktop development with C++"
-  echo.
-  echo Then close this window and run install.bat again.
-  echo.
+  echo ERROR: Backend install failed. See error above.
   pause
   exit /b 1
 )
@@ -53,22 +38,36 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ============================================
-echo  Installation complete!
+echo  Setting up environment files...
 echo ============================================
-echo.
-echo Next steps:
-echo   1. Open backend\.env in Notepad
-echo      ^(it was copied from .env.example^)
-echo   2. Set APP_API_KEY to any password you want
-echo   3. Set OPENAI_API_KEY to your OpenAI key
-echo   4. Run start-backend.bat  ^(keep it open^)
-echo   5. Run start-frontend.bat ^(keep it open^)
-echo   6. Open http://localhost:3000
-echo.
 
 if not exist "%~dp0backend\.env" (
   copy "%~dp0.env.example" "%~dp0backend\.env" >nul
-  echo backend\.env has been created from .env.example.
+  echo backend\.env created.
 )
 
+if not exist "%~dp0app\.env.local" (
+  copy "%~dp0.env.example" "%~dp0app\.env.local" >nul
+  echo app\.env.local created.
+)
+
+echo.
+echo ============================================
+echo  Installation complete!
+echo ============================================
+echo.
+echo IMPORTANT - Before starting:
+echo.
+echo   1. Open backend\.env in Notepad
+echo   2. Set APP_API_KEY to any password ^(e.g. mysecret123^)
+echo   3. Set OPENAI_API_KEY to your OpenAI key
+echo   4. Open app\.env.local in Notepad
+echo   5. Set NEXT_PUBLIC_API_KEY to the SAME password
+echo      ^(must match APP_API_KEY in backend\.env^)
+echo.
+echo Then:
+echo   6. Run start-backend.bat  ^(keep it open^)
+echo   7. Run start-frontend.bat ^(keep it open^)
+echo   8. Open http://localhost:3000
+echo.
 pause
