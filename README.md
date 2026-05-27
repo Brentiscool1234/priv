@@ -75,7 +75,76 @@ Belgium-specific: Antwerpen/Anvers/Antwerp, Brussel/Bruxelles/Brussels, etc. Cit
 15. Run QA + export report
 ```
 
-## Getting Started
+## Getting Started (Windows)
+
+### Step 1 — Install prerequisites
+
+You need:
+- [Node.js 20+](https://nodejs.org/) (LTS)
+- [Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) — required by `better-sqlite3`
+
+To install build tools from PowerShell (run as Administrator):
+```powershell
+npm install --global windows-build-tools
+```
+Or download the Visual Studio Build Tools installer and select **"Desktop development with C++"**.
+
+### Step 2 — Install dependencies
+
+Double-click `install.bat` in the project root, or run in PowerShell:
+```powershell
+cd backend; npm install
+cd ..\app; npm install
+```
+
+If `better-sqlite3` fails with a compilation error, that means build tools aren't installed yet. See Step 1.
+
+### Step 3 — Configure environment
+
+```powershell
+copy .env.example backend\.env
+```
+
+Open `backend\.env` in Notepad and fill in:
+```
+APP_API_KEY=any-secret-string-you-choose
+OPENAI_API_KEY=sk-...your-openai-key...
+```
+
+The frontend needs no `.env` — it talks to the backend on localhost:4000 by default.
+
+### Step 4 — Run
+
+Open **two separate terminals** (PowerShell or CMD):
+
+**Terminal 1 — Backend:**
+```powershell
+cd backend
+npx ts-node src/index.ts
+```
+
+**Terminal 2 — Frontend:**
+```powershell
+cd app
+npm run dev
+```
+
+Or double-click `start-backend.bat` and `start-frontend.bat`.
+
+Dashboard: http://localhost:3000  
+API: http://localhost:4000
+
+### Step 5 — WordPress Plugin
+
+1. Zip the folder `wp-plugin\irents-site-machine\`
+2. In WordPress admin: Plugins → Add New → Upload Plugin → choose the zip
+3. Activate the plugin
+4. Go to **Settings → iRents Site Machine** and copy the plugin key
+5. Back in the dashboard: open your project → Deploy tab → paste the WordPress URL and plugin key → Test Connection
+
+---
+
+## Getting Started (Mac/Linux)
 
 ### 1. Install dependencies
 
@@ -90,7 +159,7 @@ cd backend && npm install
 ### 2. Configure environment
 
 ```bash
-cp .env.example .env
+cp .env.example backend/.env
 # Fill in: APP_API_KEY, OPENAI_API_KEY
 ```
 
