@@ -2,11 +2,11 @@
   "name": "wp-site-gen-backend",
   "version": "1.0.0",
   "description": "WordPress site generation tool backend",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "start": "node dist/index.js",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
