@@ -21,7 +21,7 @@ if not exist .env (
 
 echo Starting backend on http://localhost:4000 ...
 echo.
-npx ts-node src/index.ts
+npm run dev
 echo.
 echo Backend stopped (exit code %errorlevel%)
 pause
