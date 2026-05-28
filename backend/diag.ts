@@ -48,4 +48,43 @@ for (const [name, load] of localTests) {
   }
 }
 
+console.log('\n--- runtime tests ---');
+
+// Test actual database creation + migration
+try {
+  const path = require('path');
+  const fs = require('fs');
+  const { DatabaseSync } = require('node:sqlite');
+  const dbPath = path.join(process.cwd(), 'diag-test.db');
+  console.log('DB path:', dbPath);
+  const db = new DatabaseSync(dbPath);
+  db.exec('PRAGMA journal_mode = WAL');
+  db.exec('CREATE TABLE IF NOT EXISTS test_table (id INTEGER PRIMARY KEY)');
+  db.close();
+  fs.unlinkSync(dbPath);
+  console.log('OK   DatabaseSync create+migrate+close');
+} catch (e: any) {
+  console.error('FAIL DatabaseSync ->', e.message);
+}
+
+// Test port 4000
+try {
+  const net = require('net');
+  const server = net.createServer();
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', (e: any) => {
+      console.error('FAIL port 4000 ->', e.message, '(port already in use — kill the process using it)');
+      resolve();
+    });
+    server.once('listening', () => {
+      console.log('OK   port 4000 is free');
+      server.close();
+      resolve();
+    });
+    server.listen(4000, '0.0.0.0');
+  });
+} catch (e: any) {
+  console.error('FAIL port test ->', e.message);
+}
+
 console.log('\nDone.');

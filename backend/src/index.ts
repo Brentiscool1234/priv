@@ -1,15 +1,4 @@
 import 'dotenv/config';
-// Catch any crash and print it before process dies
-process.on('uncaughtException', (err) => {
-  console.error('STARTUP CRASH:', err.message);
-  console.error(err.stack);
-  process.exit(1);
-});
-process.on('unhandledRejection', (reason) => {
-  console.error('UNHANDLED REJECTION:', reason);
-  process.exit(1);
-});
-console.log('[1] dotenv loaded');
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -38,7 +27,6 @@ app.use(limiter);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 
-// All routes require API key
 app.use('/api', authMiddleware);
 
 app.use('/api/projects', projectsRouter);
@@ -57,13 +45,32 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
-console.log('[2] running migrations...');
-runMigrations();
-console.log('[3] migrations done, starting server on port', PORT);
+// Wrap startup in async IIFE so any error is visible
+(async () => {
+  try {
+    console.log('Running migrations...');
+    runMigrations();
+    console.log('Migrations done. Starting server on port', PORT);
 
-app.listen(PORT, () => {
-  console.log('[4] server up!');
-  logger.info(`Backend API listening on http://localhost:${PORT}`);
-});
+    await new Promise<void>((resolve, reject) => {
+      const server = app.listen(PORT, () => {
+        logger.info(`Backend API listening on http://localhost:${PORT}`);
+        resolve();
+      });
+      server.on('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'EADDRINUSE') {
+          console.error(`ERROR: Port ${PORT} is already in use.`);
+          console.error('Kill the other process or change PORT in backend\\.env');
+        } else {
+          console.error('Server error:', err.message);
+        }
+        reject(err);
+      });
+    });
+  } catch (err) {
+    console.error('STARTUP ERROR:', err instanceof Error ? err.message : err);
+    process.exit(1);
+  }
+})();
 
 export { app };
