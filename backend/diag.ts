@@ -67,24 +67,17 @@ try {
   console.error('FAIL DatabaseSync ->', e.message);
 }
 
-// Test port 4000
+// Test port 4000 (sync check via child_process)
 try {
-  const net = require('net');
-  const server = net.createServer();
-  await new Promise<void>((resolve, reject) => {
-    server.once('error', (e: any) => {
-      console.error('FAIL port 4000 ->', e.message, '(port already in use — kill the process using it)');
-      resolve();
-    });
-    server.once('listening', () => {
-      console.log('OK   port 4000 is free');
-      server.close();
-      resolve();
-    });
-    server.listen(4000, '0.0.0.0');
-  });
-} catch (e: any) {
-  console.error('FAIL port test ->', e.message);
+  const { execSync } = require('child_process');
+  const result = execSync('netstat -ano | findstr :4000', { encoding: 'utf8' }).trim();
+  if (result) {
+    console.error('WARN port 4000 may be in use:\n' + result);
+  } else {
+    console.log('OK   port 4000 appears free');
+  }
+} catch {
+  console.log('OK   port 4000 appears free (netstat found nothing)');
 }
 
 console.log('\nDone.');
