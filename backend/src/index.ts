@@ -1,4 +1,15 @@
 import 'dotenv/config';
+// Catch any crash and print it before process dies
+process.on('uncaughtException', (err) => {
+  console.error('STARTUP CRASH:', err.message);
+  console.error(err.stack);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('UNHANDLED REJECTION:', reason);
+  process.exit(1);
+});
+console.log('[1] dotenv loaded');
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -46,9 +57,12 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
+console.log('[2] running migrations...');
 runMigrations();
+console.log('[3] migrations done, starting server on port', PORT);
 
 app.listen(PORT, () => {
+  console.log('[4] server up!');
   logger.info(`Backend API listening on http://localhost:${PORT}`);
 });
 
