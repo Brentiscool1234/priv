@@ -8,6 +8,23 @@ import type { ConnectWordPressBody, DeployBody, BusinessProfile } from '../types
 
 export const wordpressRouter = Router({ mergeParams: true });
 
+// Test a WP connection without a project (used in the new-project wizard)
+export const wpTestRouter = Router();
+wpTestRouter.post('/test', async (req, res) => {
+  const { wp_url, plugin_key } = req.body as { wp_url?: string; plugin_key?: string };
+  if (!wp_url || !plugin_key) {
+    res.status(400).json({ connected: false, message: 'wp_url and plugin_key are required' });
+    return;
+  }
+  try {
+    const client = new WordPressClient(wp_url, plugin_key);
+    const result = await client.testConnection();
+    res.json(result);
+  } catch (err) {
+    res.json({ connected: false, message: String(err) });
+  }
+});
+
 wordpressRouter.post('/connect', async (req, res) => {
   try {
     const db = getDb();

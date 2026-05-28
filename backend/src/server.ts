@@ -11,7 +11,7 @@ import { locationsRouter } from './routes/locations';
 import { sitemapRouter } from './routes/sitemap';
 import { briefsRouter } from './routes/briefs';
 import { contentRouter } from './routes/content';
-import { wordpressRouter } from './routes/wordpress';
+import { wordpressRouter, wpTestRouter } from './routes/wordpress';
 import { qaRouter } from './routes/qa';
 import { logger } from './lib/logger';
 
@@ -26,6 +26,9 @@ const limiter = rateLimit({ windowMs: 60_000, max: 200, standardHeaders: true, l
 app.use(limiter);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
+
+// wp/test is auth-free so the wizard can test before a project exists
+app.use('/api/wp', wpTestRouter);
 
 app.use('/api', authMiddleware);
 

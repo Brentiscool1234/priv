@@ -109,9 +109,9 @@ export default function NewProjectPage() {
 
   // Step 5: WordPress Connection
   const [wpUrl, setWpUrl] = useState('');
-  const [wpApiKey, setWpApiKey] = useState('');
   const [pluginKey, setPluginKey] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
+  const [connectionMessage, setConnectionMessage] = useState('');
 
   const allLocales = Object.values(LOCALES);
 
@@ -146,9 +146,22 @@ export default function NewProjectPage() {
   const [creating, setCreating] = useState(false);
 
   const testConnection = async () => {
+    if (!wpUrl || !pluginKey) {
+      setConnectionStatus('error');
+      setConnectionMessage('Enter both WordPress URL and Plugin Key first.');
+      return;
+    }
     setConnectionStatus('testing');
-    await new Promise((r) => setTimeout(r, 1500));
-    setConnectionStatus(wpUrl ? 'success' : 'error');
+    setConnectionMessage('');
+    try {
+      const { api } = await import('@/lib/api');
+      const result = await api.wordpress.test({ wp_url: wpUrl, plugin_key: pluginKey });
+      setConnectionStatus(result.connected ? 'success' : 'error');
+      setConnectionMessage(result.message);
+    } catch (err) {
+      setConnectionStatus('error');
+      setConnectionMessage(err instanceof Error ? err.message : 'Connection failed. Is the backend running?');
+    }
   };
 
   const handleCreate = async () => {
@@ -505,16 +518,6 @@ export default function NewProjectPage() {
               />
             </div>
             <div>
-              <label className={labelClass}>WP API Key</label>
-              <input
-                type="password"
-                value={wpApiKey}
-                onChange={(e) => setWpApiKey(e.target.value)}
-                className={inputClass}
-                placeholder="Enter your WP application password"
-              />
-            </div>
-            <div>
               <label className={labelClass}>Plugin Key</label>
               <input
                 type="password"
@@ -545,15 +548,15 @@ export default function NewProjectPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Connected successfully
+                  {connectionMessage || 'Connected successfully'}
                 </span>
               )}
               {connectionStatus === 'error' && (
                 <span className="text-sm text-red-400 flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  Connection failed
+                  {connectionMessage || 'Connection failed'}
                 </span>
               )}
             </div>

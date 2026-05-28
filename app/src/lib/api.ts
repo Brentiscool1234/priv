@@ -94,6 +94,8 @@ export const api = {
   },
 
   wordpress: {
+    test: (data: { wp_url: string; plugin_key: string }) =>
+      apiFetch<{ connected: boolean; message: string }>('/api/wp/test', { method: 'POST', body: JSON.stringify(data) }),
     connect: (projectId: string, data: { wp_url: string; plugin_key: string }) =>
       apiFetch<{ connected: boolean; message: string }>(`/api/projects/${projectId}/wp/connect`, { method: 'POST', body: JSON.stringify(data) }),
     deploy: (projectId: string) =>
