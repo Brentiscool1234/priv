@@ -20,14 +20,16 @@ projectsRouter.post('/', (req, res) => {
   const id = uuidv4();
   const now = new Date().toISOString();
   db.prepare(`
-    INSERT INTO projects (id, business_name, industry, website_url, wordpress_url, primary_locale, secondary_locales, country, status, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?)
+    INSERT INTO projects (id, business_name, industry, website_url, wordpress_url, primary_locale, secondary_locales, country, theme, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?)
   `).run(
     id, body.business_name, body.industry,
     body.website_url ?? null, body.wordpress_url ?? null,
     body.primary_locale ?? 'en-US',
     JSON.stringify(body.secondary_locales ?? []),
-    body.country ?? null, now, now
+    body.country ?? null,
+    body.theme ?? 'horizon',
+    now, now
   );
 
   if (body.profile) {

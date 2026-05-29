@@ -25,6 +25,7 @@ export interface CreateProjectPayload {
   primary_locale: string;
   secondary_locales?: string[];
   country?: string;
+  theme?: string;
   profile?: {
     business_name?: string;
     description?: string;

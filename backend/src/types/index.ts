@@ -1,6 +1,7 @@
 // ─── Core Domain Types ───────────────────────────────────────────────────────
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'completed';
+export type ThemeName = 'horizon' | 'authority' | 'local';
 export type PageStatus = 'proposed' | 'approved' | 'rejected';
 export type BriefStatus = 'pending' | 'ready' | 'approved';
 export type GeneratedPageStatus = 'pending' | 'generating' | 'done' | 'failed';
@@ -26,6 +27,7 @@ export interface Project {
   secondary_locales: string[];
   country?: string;
   status: ProjectStatus;
+  theme: ThemeName;
   page_count: number;
   created_at: string;
   updated_at: string;

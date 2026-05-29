@@ -1,7 +1,8 @@
 import { chatCompletion, openaiLimiter } from '../lib/openai';
 import { getLocaleConfig } from '../lib/locales';
+import { wrapWithTheme, getThemePromptGuidelines, THEMES } from '../lib/themes';
 import { logger } from '../lib/logger';
-import type { PageBrief, BusinessProfile, LocaleConfig } from '../types';
+import type { PageBrief, BusinessProfile, LocaleConfig, ThemeName } from '../types';
 
 export interface ContentResult {
   brief_id: string;
@@ -16,7 +17,8 @@ export interface ContentResult {
 export async function generatePageContent(
   brief: PageBrief,
   businessProfile: BusinessProfile,
-  locale: LocaleConfig
+  locale: LocaleConfig,
+  theme: ThemeName = 'horizon'
 ): Promise<string> {
   const systemPrompt = buildSystemPrompt(businessProfile, locale);
   const userPrompt = buildUserPrompt(brief, businessProfile, locale);
@@ -29,7 +31,8 @@ export async function generatePageContent(
     { temperature: 0.72, max_tokens: 4096 }
   );
 
-  return cleanHtml(raw);
+  const inner = cleanHtml(raw);
+  return wrapWithTheme(inner, theme);
 }
 
 /**
@@ -38,7 +41,8 @@ export async function generatePageContent(
 export async function generateBatch(
   briefs: PageBrief[],
   businessProfile: BusinessProfile,
-  localeCode: string
+  localeCode: string,
+  theme: ThemeName = 'horizon'
 ): Promise<ContentResult[]> {
   const locale = getLocaleConfig(localeCode);
   const results: ContentResult[] = [];
@@ -47,7 +51,7 @@ export async function generateBatch(
     openaiLimiter.run(async (): Promise<ContentResult> => {
       try {
         logger.info(`Generating content for brief ${brief.id} (${brief.slug})`);
-        const content_html = await generatePageContent(brief, businessProfile, locale);
+        const content_html = await generatePageContent(brief, businessProfile, locale, theme);
         return { brief_id: brief.id, content_html, success: true };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
@@ -102,7 +106,9 @@ CONTENT RULES:
 - Include the CTA "${locale.cta_style}" as a visible call-to-action button or prominent text
 - Write minimum 400 words total across all sections
 - Do not include <html>, <head>, or <body> tags — only the inner section HTML
-- Return ONLY valid HTML, no markdown, no explanatory text before or after`;
+- Return ONLY valid HTML, no markdown, no explanatory text before or after
+
+${getThemePromptGuidelines()}`;
 }
 
 function buildUserPrompt(

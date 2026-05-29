@@ -24,8 +24,35 @@ const STEPS = [
   'Services',
   'Locations',
   'Language & Locale',
+  'Theme',
   'WordPress Connection',
   'Review & Create',
+];
+
+type ThemeName = 'horizon' | 'authority' | 'local';
+
+const THEMES: { id: ThemeName; label: string; description: string; colors: string[]; tagline: string }[] = [
+  {
+    id: 'horizon',
+    label: 'Horizon',
+    tagline: 'Clean & Modern',
+    description: 'Sharp layouts, sky-blue accents, white backgrounds. Great for tech-forward service companies.',
+    colors: ['#0ea5e9', '#0f172a', '#f8fafc', '#475569'],
+  },
+  {
+    id: 'authority',
+    label: 'Authority',
+    tagline: 'Bold & Corporate',
+    description: 'Deep indigo header, orange CTAs, uppercase headings. Signals trust and expertise.',
+    colors: ['#1e1b4b', '#f97316', '#f8f7ff', '#374151'],
+  },
+  {
+    id: 'local',
+    label: 'Local',
+    tagline: 'Warm & Community',
+    description: 'Forest green, amber CTAs, rounded and friendly. Perfect for neighborhood service businesses.',
+    colors: ['#15803d', '#f59e0b', '#fefce8', '#57534e'],
+  },
 ];
 
 interface ServiceEntry {
@@ -107,7 +134,10 @@ export default function NewProjectPage() {
   const [secondaryLocales, setSecondaryLocales] = useState<LocaleCode[]>([]);
   const [tone, setTone] = useState('neutral');
 
-  // Step 5: WordPress Connection
+  // Step 5: Theme
+  const [theme, setTheme] = useState<ThemeName>('horizon');
+
+  // Step 6: WordPress Connection
   const [wpUrl, setWpUrl] = useState('');
   const [pluginKey, setPluginKey] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
@@ -181,6 +211,7 @@ export default function NewProjectPage() {
         primary_locale: primaryLocale,
         secondary_locales: secondaryLocales,
         country: locale,
+        theme,
         profile: {
           business_name: businessName,
           description: description || undefined,
@@ -503,8 +534,48 @@ export default function NewProjectPage() {
           </div>
         )}
 
-        {/* Step 5: WordPress Connection */}
+        {/* Step 5: Theme Selection */}
         {step === 5 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-white mb-1">Choose Your Theme</h2>
+            <p className="text-sm text-slate-400 mb-4">This controls how every generated page looks on your WordPress site.</p>
+            <div className="grid gap-4">
+              {THEMES.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTheme(t.id)}
+                  className={`w-full text-left p-5 rounded-xl border-2 transition-all ${
+                    theme === t.id
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-slate-600 bg-slate-900 hover:border-slate-500'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-white text-base">{t.label}</span>
+                        <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{t.tagline}</span>
+                        {theme === t.id && (
+                          <span className="text-xs text-blue-400 bg-blue-900/40 px-2 py-0.5 rounded-full">Selected</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-400">{t.description}</p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0 mt-1">
+                      {t.colors.map((c) => (
+                        <span key={c} className="w-5 h-5 rounded-full border border-slate-600 shrink-0" style={{ backgroundColor: c }} />
+                      ))}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 6: WordPress Connection */}
+        {step === 6 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-white mb-4">WordPress Connection</h2>
             <div>
@@ -563,8 +634,8 @@ export default function NewProjectPage() {
           </div>
         )}
 
-        {/* Step 6: Review & Create */}
-        {step === 6 && (
+        {/* Step 7: Review & Create */}
+        {step === 7 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-white mb-4">Review & Create</h2>
             <div className="space-y-3">
@@ -599,6 +670,8 @@ export default function NewProjectPage() {
                   <dd className="text-slate-200">{secondaryLocales.length > 0 ? secondaryLocales.join(', ') : 'None'}</dd>
                   <dt className="text-slate-500">Tone</dt>
                   <dd className="text-slate-200 capitalize">{tone}</dd>
+                  <dt className="text-slate-500">Theme</dt>
+                  <dd className="text-slate-200 capitalize">{theme}</dd>
                   <dt className="text-slate-500">WP URL</dt>
                   <dd className="text-slate-200">{wpUrl || '—'}</dd>
                 </dl>

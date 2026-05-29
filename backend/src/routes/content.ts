@@ -4,7 +4,7 @@ import { getDb, runTransaction } from '../db/client';
 import { generateBatch } from '../engines/content-engine';
 import { generateSchema } from '../engines/schema-engine';
 import { logger } from '../lib/logger';
-import type { PageBrief, BusinessProfile, GeneratedPage } from '../types';
+import type { PageBrief, BusinessProfile, GeneratedPage, ThemeName } from '../types';
 
 export const contentRouter = Router({ mergeParams: true });
 
@@ -40,6 +40,9 @@ contentRouter.post('/generate', async (req, res) => {
       ? parseProfile(profileRow)
       : { id: '', project_id: projectId, trust_points: [], brand_colors: {}, data: {} };
 
+    const projectRow = db.prepare('SELECT theme FROM projects WHERE id = ?').get(projectId) as { theme?: string } | undefined;
+    const theme: ThemeName = (projectRow?.theme as ThemeName) ?? 'horizon';
+
     // Group by locale
     const byLocale = new Map<string, PageBrief[]>();
     for (const brief of parsedBriefs) {
@@ -71,7 +74,7 @@ contentRouter.post('/generate', async (req, res) => {
     setImmediate(async () => {
       for (const [locale, localeBriefs] of byLocale) {
         try {
-          const results = await generateBatch(localeBriefs, defaultProfile, locale);
+          const results = await generateBatch(localeBriefs, defaultProfile, locale, theme);
           runTransaction(db, () => {
             for (const result of results) {
               const brief = localeBriefs.find((b) => b.id === result.brief_id);
