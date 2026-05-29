@@ -65,6 +65,9 @@ add_action( 'wp_head', array( 'ISM_Schema_Injector', 'output_schema' ) );
 add_action( 'wp_head', array( 'ISM_Hreflang', 'output_hreflang' ) );
 add_action( 'wp_head', 'ism_output_meta_tags' );
 
+// Inject theme body class so CSS selectors can style the whole site.
+add_filter( 'body_class', 'ism_add_theme_body_class' );
+
 // Enqueue front-end assets.
 add_action( 'wp_enqueue_scripts', 'ism_enqueue_frontend_assets' );
 
@@ -97,6 +100,18 @@ function ism_output_meta_tags() {
 	if ( $canonical ) {
 		echo '<link rel="canonical" href="' . esc_url( $canonical ) . '">' . "\n";
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Theme body class injection
+// ---------------------------------------------------------------------------
+function ism_add_theme_body_class( $classes ) {
+	$theme_name = get_option( 'irents_theme_name', '' );
+	$allowed    = array( 'horizon', 'authority', 'local' );
+	if ( $theme_name && in_array( $theme_name, $allowed, true ) ) {
+		$classes[] = 'irents-theme-' . $theme_name;
+	}
+	return $classes;
 }
 
 // ---------------------------------------------------------------------------

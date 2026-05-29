@@ -86,7 +86,7 @@ export async function deployPages(
   try {
     const projectRow = db.prepare('SELECT theme FROM projects WHERE id = ?').get(projectId) as { theme?: string } | undefined;
     const theme = ((projectRow?.theme ?? 'horizon') as ThemeName);
-    await client.pushSettings({ theme_css: THEMES[theme]?.css ?? THEMES.horizon.css });
+    await client.pushSettings({ theme_name: theme, theme_css: THEMES[theme]?.css ?? THEMES.horizon.css });
     logger.info(`Theme CSS (${theme}) pushed to WordPress before deployment`);
   } catch (cssErr) {
     logger.warn('Could not push theme CSS before deployment (non-fatal)', { cssErr });

@@ -319,6 +319,14 @@ class ISM_Api_Router {
 			update_option( 'irents_brand_colors', $colors );
 		}
 
+		// Theme name — adds body class so CSS can target the whole site.
+		if ( isset( $body['theme_name'] ) && is_string( $body['theme_name'] ) ) {
+			$allowed_themes = array( 'horizon', 'authority', 'local' );
+			if ( in_array( $body['theme_name'], $allowed_themes, true ) ) {
+				update_option( 'irents_theme_name', $body['theme_name'] );
+			}
+		}
+
 		// Theme CSS — injected globally on the front-end for all generated pages.
 		if ( isset( $body['theme_css'] ) && is_string( $body['theme_css'] ) ) {
 			// Store raw CSS (trusted source — authenticated via plugin key).
