@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LocaleCode, Industry } from '@/types';
 import { LOCALES } from '@/lib/locales';
+import { THEMES, ThemeName, buildPreviewHtml } from '@/lib/themes';
 
 const INDUSTRIES: { value: Industry; label: string }[] = [
   { value: 'party_rentals', label: 'Party Rentals' },
@@ -27,32 +28,6 @@ const STEPS = [
   'Theme',
   'WordPress Connection',
   'Review & Create',
-];
-
-type ThemeName = 'horizon' | 'authority' | 'local';
-
-const THEMES: { id: ThemeName; label: string; description: string; colors: string[]; tagline: string }[] = [
-  {
-    id: 'horizon',
-    label: 'Horizon',
-    tagline: 'Clean & Modern',
-    description: 'Sharp layouts, sky-blue accents, white backgrounds. Great for tech-forward service companies.',
-    colors: ['#0ea5e9', '#0f172a', '#f8fafc', '#475569'],
-  },
-  {
-    id: 'authority',
-    label: 'Authority',
-    tagline: 'Bold & Corporate',
-    description: 'Deep indigo header, orange CTAs, uppercase headings. Signals trust and expertise.',
-    colors: ['#1e1b4b', '#f97316', '#f8f7ff', '#374151'],
-  },
-  {
-    id: 'local',
-    label: 'Local',
-    tagline: 'Warm & Community',
-    description: 'Forest green, amber CTAs, rounded and friendly. Perfect for neighborhood service businesses.',
-    colors: ['#15803d', '#f59e0b', '#fefce8', '#57534e'],
-  },
 ];
 
 interface ServiceEntry {
@@ -136,6 +111,7 @@ export default function NewProjectPage() {
 
   // Step 5: Theme
   const [theme, setTheme] = useState<ThemeName>('horizon');
+  const [previewTheme, setPreviewTheme] = useState<ThemeName | null>(null);
 
   // Step 6: WordPress Connection
   const [wpUrl, setWpUrl] = useState('');
@@ -540,35 +516,48 @@ export default function NewProjectPage() {
             <h2 className="text-lg font-semibold text-white mb-1">Choose Your Theme</h2>
             <p className="text-sm text-slate-400 mb-4">This controls how every generated page looks on your WordPress site.</p>
             <div className="grid gap-4">
-              {THEMES.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTheme(t.id)}
-                  className={`w-full text-left p-5 rounded-xl border-2 transition-all ${
-                    theme === t.id
+              {(Object.values(THEMES) as typeof THEMES[ThemeName][]).map((t) => (
+                <div
+                  key={t.name}
+                  className={`rounded-xl border-2 transition-all ${
+                    theme === t.name
                       ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-slate-600 bg-slate-900 hover:border-slate-500'
+                      : 'border-slate-600 bg-slate-900'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-white text-base">{t.label}</span>
-                        <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{t.tagline}</span>
-                        {theme === t.id && (
-                          <span className="text-xs text-blue-400 bg-blue-900/40 px-2 py-0.5 rounded-full">Selected</span>
-                        )}
+                  <button
+                    type="button"
+                    onClick={() => setTheme(t.name)}
+                    className="w-full text-left p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-white text-base">{t.label}</span>
+                          <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{t.tagline}</span>
+                          {theme === t.name && (
+                            <span className="text-xs text-blue-400 bg-blue-900/40 px-2 py-0.5 rounded-full">Selected</span>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-400">{t.description}</p>
                       </div>
-                      <p className="text-sm text-slate-400">{t.description}</p>
+                      <div className="flex gap-1.5 shrink-0 mt-1">
+                        {t.colors.map((c) => (
+                          <span key={c} className="w-5 h-5 rounded-full border border-slate-600 shrink-0" style={{ backgroundColor: c }} />
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex gap-1.5 shrink-0 mt-1">
-                      {t.colors.map((c) => (
-                        <span key={c} className="w-5 h-5 rounded-full border border-slate-600 shrink-0" style={{ backgroundColor: c }} />
-                      ))}
-                    </div>
+                  </button>
+                  <div className="px-5 pb-4">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewTheme(t.name)}
+                      className="text-xs text-slate-400 hover:text-slate-200 underline underline-offset-2 transition-colors"
+                    >
+                      Preview this theme
+                    </button>
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           </div>
@@ -685,6 +674,53 @@ export default function NewProjectPage() {
       {createError && (
         <div className="mt-4 bg-red-900/40 border border-red-500 text-red-300 rounded-lg px-4 py-3 text-sm">
           {createError}
+        </div>
+      )}
+
+      {/* Theme Preview Modal */}
+      {previewTheme && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-black/80"
+          onClick={() => setPreviewTheme(null)}
+        >
+          <div
+            className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-white font-medium">
+                Theme Preview: {THEMES[previewTheme].label}
+              </span>
+              <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+                {THEMES[previewTheme].tagline}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => { setTheme(previewTheme); setPreviewTheme(null); }}
+                className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-medium transition-colors"
+              >
+                Select This Theme
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewTheme(null)}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <iframe
+            className="flex-1 w-full bg-white"
+            srcDoc={buildPreviewHtml(previewTheme)}
+            title={`${THEMES[previewTheme].label} theme preview`}
+            sandbox="allow-same-origin"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
 

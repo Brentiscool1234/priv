@@ -248,6 +248,7 @@ export interface CreateProjectBody {
   primary_locale?: string;
   secondary_locales?: string[];
   country?: string;
+  theme?: ThemeName;
   profile?: Partial<Omit<BusinessProfile, 'id' | 'project_id'>>;
 }
 

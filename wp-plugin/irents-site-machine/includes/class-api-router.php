@@ -319,6 +319,12 @@ class ISM_Api_Router {
 			update_option( 'irents_brand_colors', $colors );
 		}
 
+		// Theme CSS — injected globally on the front-end for all generated pages.
+		if ( isset( $body['theme_css'] ) && is_string( $body['theme_css'] ) ) {
+			// Store raw CSS (trusted source — authenticated via plugin key).
+			update_option( 'irents_theme_css', $body['theme_css'] );
+		}
+
 		// Logo: expects an attachment ID or URL.
 		if ( ! empty( $body['logo_attachment_id'] ) ) {
 			$logo_id = absint( $body['logo_attachment_id'] );

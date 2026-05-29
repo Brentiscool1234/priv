@@ -120,6 +120,12 @@ function ism_enqueue_frontend_assets() {
 		wp_add_inline_style( 'irents-frontend', $inline_css );
 	}
 
+	// Inject theme CSS globally so every generated page is styled correctly.
+	$theme_css = get_option( 'irents_theme_css', '' );
+	if ( ! empty( $theme_css ) ) {
+		wp_add_inline_style( 'irents-frontend', $theme_css );
+	}
+
 	wp_enqueue_script(
 		'irents-frontend',
 		ISM_PLUGIN_URL . 'assets/js/irents-frontend.js',

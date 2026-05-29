@@ -4,7 +4,8 @@ import { WordPressClient } from '../wordpress/client';
 import { deployPages } from '../wordpress/deployer';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../lib/logger';
-import type { ConnectWordPressBody, DeployBody, BusinessProfile } from '../types';
+import { THEMES } from '../lib/themes';
+import type { ConnectWordPressBody, DeployBody, BusinessProfile, ThemeName } from '../types';
 
 export const wordpressRouter = Router({ mergeParams: true });
 
@@ -49,6 +50,18 @@ wordpressRouter.post('/connect', async (req, res) => {
     } else {
       db.prepare('INSERT INTO wordpress_connections (id, project_id, wp_url, plugin_key, status, last_checked, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
         .run(id, ( req.params as any).id, body.wp_url, body.plugin_key, status, now, now);
+    }
+
+    // Push project theme CSS to WordPress after a successful connection
+    if (test.success) {
+      try {
+        const projectRow = db.prepare('SELECT theme FROM projects WHERE id = ?').get(( req.params as any).id) as { theme?: string } | undefined;
+        const theme = ((projectRow?.theme ?? 'horizon') as ThemeName);
+        await client.pushSettings({ theme_css: THEMES[theme]?.css ?? THEMES.horizon.css });
+        logger.info(`Theme CSS (${theme}) pushed to WordPress`);
+      } catch (cssErr) {
+        logger.warn('Could not push theme CSS to WordPress (non-fatal)', { cssErr });
+      }
     }
 
     res.json({ connected: test.success, message: test.message });

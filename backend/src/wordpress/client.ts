@@ -108,6 +108,14 @@ export class WordPressClient {
     logger.info(`Created WP menu: ${name}`);
   }
 
+  async pushSettings(data: Record<string, unknown>): Promise<void> {
+    const res = await this.request('POST', '/wp-json/irents/v1/settings', data);
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Failed to push settings: HTTP ${res.status} – ${body}`);
+    }
+  }
+
   // ─── Private Helpers ─────────────────────────────────────────────────────
 
   private buildPagePayload(data: WPPageData): Record<string, unknown> {

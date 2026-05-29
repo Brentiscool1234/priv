@@ -2,12 +2,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { WordPressClient } from './client';
 import { logger } from '../lib/logger';
 import { getDb } from '../db/client';
+import { THEMES } from '../lib/themes';
 import type {
   GeneratedPage,
   BusinessProfile,
   Deployment,
   DeployLogEntry,
   WPPageData,
+  ThemeName,
 } from '../types';
 
 export interface DeployOptions {
@@ -79,6 +81,16 @@ export async function deployPages(
   );
 
   logger.info(`Deployment ${deployId} started for project ${projectId}: ${pages.length} pages`);
+
+  // ── Push theme CSS to WordPress ────────────────────────────────────────────
+  try {
+    const projectRow = db.prepare('SELECT theme FROM projects WHERE id = ?').get(projectId) as { theme?: string } | undefined;
+    const theme = ((projectRow?.theme ?? 'horizon') as ThemeName);
+    await client.pushSettings({ theme_css: THEMES[theme]?.css ?? THEMES.horizon.css });
+    logger.info(`Theme CSS (${theme}) pushed to WordPress before deployment`);
+  } catch (cssErr) {
+    logger.warn('Could not push theme CSS before deployment (non-fatal)', { cssErr });
+  }
 
   // ── Deploy in batches of 10 ────────────────────────────────────────────────
   const BATCH_SIZE = 10;
