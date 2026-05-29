@@ -109,7 +109,7 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
   const handleGenerateBriefs = () =>
     runStep('briefs', 'Generate Briefs', async () => {
       const result = await api.briefs.generate(id) as any;
-      return `Generated ${result.count ?? 0} briefs.`;
+      return `Generated ${result.generated ?? 0} briefs.`;
     });
 
   const handleGenerateContent = () =>

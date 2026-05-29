@@ -69,7 +69,7 @@ export function generateBrief(ctx: BriefContext): PageBrief {
     faq_questions: faqQuestions,
     internal_links: internalLinks,
     schema_types: template.schema_types,
-    status: 'pending',
+    status: 'approved',
     created_at: now,
   };
 }
