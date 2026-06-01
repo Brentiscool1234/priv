@@ -3,12 +3,14 @@ import { WordPressClient } from './client';
 import { logger } from '../lib/logger';
 import { getDb } from '../db/client';
 import { THEMES } from '../lib/themes';
+import { generateSchema } from '../engines/schema-engine';
 import type {
   GeneratedPage,
   BusinessProfile,
   Deployment,
   DeployLogEntry,
   WPPageData,
+  PageImage,
   ThemeName,
 } from '../types';
 
@@ -96,7 +98,24 @@ export async function deployPages(
   const BATCH_SIZE = 10;
   for (let i = 0; i < pages.length; i += BATCH_SIZE) {
     const batch = pages.slice(i, i + BATCH_SIZE);
-    const wpPages: WPPageData[] = batch.map((p) => pageToWPData(p, profile));
+
+    // Upload images and replace placeholders before pushing to WP
+    const processedBatch = await Promise.all(
+      batch.map(async (page) => {
+        if (!page.images_json?.length) return page;
+        const { images, html } = await uploadPageImages(page, client);
+        const hasNewUploads = images.some((img) => img.wp_url && !page.images_json?.find((o) => o.slot === img.slot)?.wp_url);
+        if (!hasNewUploads) return { ...page, content_html: html };
+        const updatedPage: GeneratedPage = { ...page, images_json: images, content_html: html };
+        const schema = generateSchema(updatedPage, profile, page.locale);
+        db.prepare(
+          `UPDATE generated_pages SET images_json = ?, content_html = ?, schema_json = ?, updated_at = ? WHERE id = ?`
+        ).run(JSON.stringify(images), html, JSON.stringify(schema), new Date().toISOString(), page.id);
+        return updatedPage;
+      })
+    );
+
+    const wpPages: WPPageData[] = processedBatch.map((p) => pageToWPData(p, profile));
 
     try {
       const result = await client.bulkCreatePages(wpPages);
@@ -132,7 +151,7 @@ export async function deployPages(
       const msg = err instanceof Error ? err.message : String(err);
       logger.error(`Batch deploy error: ${msg}`);
 
-      for (const p of batch) {
+      for (const p of processedBatch) {
         deployment.log.push({
           ts: new Date().toISOString(),
           slug: p.slug,
@@ -185,12 +204,40 @@ function deserializePage(row: Record<string, unknown>): GeneratedPage {
     meta_description: row['meta_description'] as string | undefined,
     content_html: row['content_html'] as string | undefined,
     schema_json: row['schema_json'] ? JSON.parse(row['schema_json'] as string) : undefined,
+    images_json: row['images_json'] ? JSON.parse(row['images_json'] as string) : [],
     internal_links: row['internal_links'] ? JSON.parse(row['internal_links'] as string) : [],
     status: row['status'] as GeneratedPage['status'],
     wp_page_id: row['wp_page_id'] as number | undefined,
     created_at: row['created_at'] as string,
     updated_at: row['updated_at'] as string,
   };
+}
+
+async function uploadPageImages(
+  page: GeneratedPage,
+  client: WordPressClient
+): Promise<{ images: PageImage[]; html: string }> {
+  const images = page.images_json ?? [];
+  let html = page.content_html ?? '';
+
+  if (images.length === 0) return { images, html };
+
+  const updated = await Promise.all(
+    images.map(async (img) => {
+      if (img.wp_url || !img.data_b64) return img;
+      try {
+        const filename = `ism-${img.slot}-${Date.now()}.png`;
+        const { media_id, url } = await client.uploadMedia(filename, img.data_b64, 'image/png');
+        html = html.replace(`[ISM_IMAGE:${img.slot}]`, url);
+        return { ...img, wp_media_id: media_id, wp_url: url };
+      } catch (err) {
+        logger.warn(`Image upload failed (${img.slot}) for ${page.slug}: ${err instanceof Error ? err.message : String(err)}`);
+        return img;
+      }
+    })
+  );
+
+  return { images: updated, html };
 }
 
 function pageToWPData(page: GeneratedPage, _profile: BusinessProfile): WPPageData {

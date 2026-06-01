@@ -78,6 +78,13 @@ class ISM_Api_Router {
 			'permission_callback' => $cb,
 		) );
 
+		// POST /irents/v1/media/upload
+		register_rest_route( $ns, '/media/upload', array(
+			'methods'             => WP_REST_Server::CREATABLE,
+			'callback'            => array( __CLASS__, 'handle_media_upload' ),
+			'permission_callback' => $cb,
+		) );
+
 		// GET /irents/v1/sitemap
 		register_rest_route( $ns, '/sitemap', array(
 			'methods'             => WP_REST_Server::READABLE,
@@ -349,6 +356,58 @@ class ISM_Api_Router {
 		ISM_Logger::log( 'Site settings updated via API.' );
 
 		return new WP_REST_Response( array( 'success' => true ), 200 );
+	}
+
+	/**
+	 * POST /media/upload — Upload a base64-encoded image to the WP media library.
+	 */
+	public static function handle_media_upload( WP_REST_Request $request ): WP_REST_Response {
+		$body = $request->get_json_params();
+
+		if ( empty( $body['filename'] ) || empty( $body['data_b64'] ) ) {
+			return new WP_REST_Response( array( 'error' => 'filename and data_b64 are required.' ), 400 );
+		}
+
+		$filename  = sanitize_file_name( $body['filename'] );
+		$mime_type = isset( $body['mime_type'] ) ? sanitize_text_field( $body['mime_type'] ) : 'image/png';
+
+		// Decode base64 data.
+		$binary = base64_decode( $body['data_b64'], true );
+		if ( false === $binary ) {
+			return new WP_REST_Response( array( 'error' => 'Invalid base64 data.' ), 400 );
+		}
+
+		// Write file to WP uploads directory.
+		$upload = wp_upload_bits( $filename, null, $binary );
+		if ( ! empty( $upload['error'] ) ) {
+			return new WP_REST_Response( array( 'error' => $upload['error'] ), 500 );
+		}
+
+		// Register as a media library attachment.
+		$attachment = array(
+			'post_mime_type' => $mime_type,
+			'post_title'     => preg_replace( '/\.[^.]+$/', '', $filename ),
+			'post_content'   => '',
+			'post_status'    => 'inherit',
+		);
+
+		$attach_id = wp_insert_attachment( $attachment, $upload['file'] );
+		if ( is_wp_error( $attach_id ) ) {
+			return new WP_REST_Response( array( 'error' => $attach_id->get_error_message() ), 500 );
+		}
+
+		// Generate thumbnails and update metadata.
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
+		wp_update_attachment_metadata( $attach_id, $attach_data );
+
+		ISM_Logger::log( "Media uploaded: {$filename} → attachment ID {$attach_id}" );
+
+		return new WP_REST_Response( array(
+			'success'  => true,
+			'media_id' => $attach_id,
+			'url'      => $upload['url'],
+		), 200 );
 	}
 
 	/**

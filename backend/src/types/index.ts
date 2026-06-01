@@ -114,6 +114,15 @@ export interface PageBrief {
   created_at: string;
 }
 
+export interface PageImage {
+  slot: 'hero' | 'content_1' | 'content_2';
+  alt: string;
+  prompt: string;
+  data_b64: string;
+  wp_media_id?: number;
+  wp_url?: string;
+}
+
 export interface GeneratedPage {
   id: string;
   brief_id: string;
@@ -126,6 +135,7 @@ export interface GeneratedPage {
   meta_description?: string;
   content_html?: string;
   schema_json?: object[];
+  images_json?: PageImage[];
   internal_links: InternalLink[];
   status: GeneratedPageStatus;
   wp_page_id?: number;

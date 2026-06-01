@@ -116,6 +116,27 @@ export class WordPressClient {
     }
   }
 
+  // ─── Media Upload ─────────────────────────────────────────────────────────
+
+  async uploadMedia(
+    filename: string,
+    dataB64: string,
+    mimeType = 'image/png'
+  ): Promise<{ media_id: number; url: string }> {
+    const res = await this.request('POST', '/wp-json/irents/v1/media/upload', {
+      filename,
+      mime_type: mimeType,
+      data_b64: dataB64,
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Failed to upload media "${filename}": HTTP ${res.status} – ${body}`);
+    }
+    const json = (await res.json()) as { success: boolean; media_id: number; url: string };
+    logger.info(`Uploaded media: ${filename} → ID ${json.media_id}`);
+    return { media_id: json.media_id, url: json.url };
+  }
+
   // ─── Private Helpers ─────────────────────────────────────────────────────
 
   private buildPagePayload(data: WPPageData): Record<string, unknown> {

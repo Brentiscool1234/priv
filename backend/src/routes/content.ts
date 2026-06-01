@@ -4,7 +4,7 @@ import { getDb, runTransaction } from '../db/client';
 import { generateBatch } from '../engines/content-engine';
 import { generateSchema } from '../engines/schema-engine';
 import { logger } from '../lib/logger';
-import type { PageBrief, BusinessProfile, GeneratedPage, ThemeName } from '../types';
+import type { PageBrief, BusinessProfile, GeneratedPage, PageImage, ThemeName } from '../types';
 
 export const contentRouter = Router({ mergeParams: true });
 
@@ -100,8 +100,8 @@ contentRouter.post('/generate', async (req, res) => {
                   updated_at: updatedAt,
                 };
                 const schema = generateSchema({ ...pagePlaceholder, content_html: result.content_html }, defaultProfile, brief.locale);
-                db.prepare(`UPDATE generated_pages SET content_html = ?, schema_json = ?, h1 = ?, meta_title = ?, meta_description = ?, internal_links = ?, status = 'done', updated_at = ? WHERE brief_id = ?`)
-                  .run(result.content_html, JSON.stringify(schema), brief.h1 ?? null, brief.meta_title ?? null, brief.meta_description ?? null, JSON.stringify(brief.internal_links), updatedAt, brief.id);
+                db.prepare(`UPDATE generated_pages SET content_html = ?, schema_json = ?, images_json = ?, h1 = ?, meta_title = ?, meta_description = ?, internal_links = ?, status = 'done', updated_at = ? WHERE brief_id = ?`)
+                  .run(result.content_html, JSON.stringify(schema), JSON.stringify(result.images), brief.h1 ?? null, brief.meta_title ?? null, brief.meta_description ?? null, JSON.stringify(brief.internal_links), updatedAt, brief.id);
               } else {
                 db.prepare("UPDATE generated_pages SET status = 'failed', updated_at = ? WHERE brief_id = ?").run(updatedAt, brief.id);
               }
@@ -173,9 +173,9 @@ contentRouter.post('/:pageId/regenerate', async (req, res) => {
         const result = results[0];
         const updatedAt = new Date().toISOString();
         if (result && result.success) {
-          const schema = generateSchema({ ...page, content_html: result.content_html }, defaultProfile, brief.locale);
-          db.prepare(`UPDATE generated_pages SET content_html = ?, schema_json = ?, status = 'done', updated_at = ? WHERE id = ?`)
-            .run(result.content_html, JSON.stringify(schema), updatedAt, ( req.params as any).pageId);
+          const schema = generateSchema({ ...page, content_html: result.content_html, images_json: result.images }, defaultProfile, brief.locale);
+          db.prepare(`UPDATE generated_pages SET content_html = ?, schema_json = ?, images_json = ?, status = 'done', updated_at = ? WHERE id = ?`)
+            .run(result.content_html, JSON.stringify(schema), JSON.stringify(result.images), updatedAt, ( req.params as any).pageId);
         } else {
           db.prepare("UPDATE generated_pages SET status = 'failed', updated_at = ? WHERE id = ?").run(updatedAt, ( req.params as any).pageId);
         }
@@ -203,6 +203,7 @@ function parsePage(row: Record<string, unknown>): GeneratedPage {
     meta_description: row['meta_description'] as string | undefined,
     content_html: row['content_html'] as string | undefined,
     schema_json: tryParse(row['schema_json'], []) as object[],
+    images_json: tryParse(row['images_json'], []) as PageImage[],
     internal_links: tryParse(row['internal_links'], []) as GeneratedPage['internal_links'],
     status: row['status'] as GeneratedPage['status'],
     wp_page_id: row['wp_page_id'] as number | undefined,

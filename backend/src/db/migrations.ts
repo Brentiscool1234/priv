@@ -12,6 +12,7 @@ export function runMigrations(): void {
     try { db.exec(sql); } catch { /* column already exists */ }
   };
   addIfMissing("ALTER TABLE projects ADD COLUMN theme TEXT DEFAULT 'horizon'");
+  addIfMissing("ALTER TABLE generated_pages ADD COLUMN images_json TEXT DEFAULT '[]'");
 
   logger.info('Database migrations complete');
 }
