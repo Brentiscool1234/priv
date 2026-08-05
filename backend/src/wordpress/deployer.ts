@@ -94,75 +94,60 @@ export async function deployPages(
     logger.warn('Could not push theme CSS before deployment (non-fatal)', { cssErr });
   }
 
-  // ── Deploy in batches of 10 ────────────────────────────────────────────────
-  const BATCH_SIZE = 10;
-  for (let i = 0; i < pages.length; i += BATCH_SIZE) {
-    const batch = pages.slice(i, i + BATCH_SIZE);
-
-    // Upload images and replace placeholders before pushing to WP
-    const processedBatch = await Promise.all(
-      batch.map(async (page) => {
-        if (!page.images_json?.length) return page;
+  // ── Deploy one page at a time ─────────────────────────────────────────────
+  // Sending pages individually avoids PHP memory exhaustion on shared hosting
+  // and gives a clear per-page error if something goes wrong.
+  for (const page of pages) {
+    // Upload images and replace placeholders
+    let processedPage = page;
+    if (page.images_json?.length) {
+      try {
         const { images, html } = await uploadPageImages(page, client);
         const hasNewUploads = images.some((img) => img.wp_url && !page.images_json?.find((o) => o.slot === img.slot)?.wp_url);
-        if (!hasNewUploads) return { ...page, content_html: html };
-        const updatedPage: GeneratedPage = { ...page, images_json: images, content_html: html };
-        const schema = generateSchema(updatedPage, profile, page.locale);
-        db.prepare(
-          `UPDATE generated_pages SET images_json = ?, content_html = ?, schema_json = ?, updated_at = ? WHERE id = ?`
-        ).run(JSON.stringify(images), html, JSON.stringify(schema), new Date().toISOString(), page.id);
-        return updatedPage;
-      })
-    );
-
-    const wpPages: WPPageData[] = processedBatch.map((p) => pageToWPData(p, profile));
-
-    try {
-      const result = await client.bulkCreatePages(wpPages);
-
-      for (const created of result.created) {
-        const entry: DeployLogEntry = {
-          ts: new Date().toISOString(),
-          slug: created.slug,
-          status: 'ok',
-          wp_page_id: created.id,
-        };
-        deployment.log.push(entry);
-        deployment.pages_created++;
-
-        // Update generated_page record
-        db.prepare(
-          `UPDATE generated_pages SET wp_page_id = ?, status = 'deployed', updated_at = ? WHERE project_id = ? AND slug = ?`
-        ).run(created.id, entry.ts, projectId, created.slug);
-      }
-
-      for (const failed of result.failed) {
-        const entry: DeployLogEntry = {
-          ts: new Date().toISOString(),
-          slug: failed.slug,
-          status: 'failed',
-          message: failed.error,
-        };
-        deployment.log.push(entry);
-        deployment.pages_failed++;
-        logger.warn(`Failed to deploy ${failed.slug}: ${failed.error}`);
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      logger.error(`Batch deploy error: ${msg}`);
-
-      for (const p of processedBatch) {
-        deployment.log.push({
-          ts: new Date().toISOString(),
-          slug: p.slug,
-          status: 'failed',
-          message: msg,
-        });
-        deployment.pages_failed++;
+        if (hasNewUploads) {
+          const updatedPage: GeneratedPage = { ...page, images_json: images, content_html: html };
+          const schema = generateSchema(updatedPage, profile, page.locale);
+          db.prepare(
+            `UPDATE generated_pages SET images_json = ?, content_html = ?, schema_json = ?, updated_at = ? WHERE id = ?`
+          ).run(JSON.stringify(images), html, JSON.stringify(schema), new Date().toISOString(), page.id);
+          processedPage = updatedPage;
+        } else {
+          processedPage = { ...page, content_html: html };
+        }
+      } catch (imgErr) {
+        logger.warn(`Image upload skipped for ${page.slug}: ${imgErr instanceof Error ? imgErr.message : String(imgErr)}`);
       }
     }
 
-    // Persist progress
+    const wpPage = pageToWPData(processedPage, profile);
+
+    try {
+      const result = await client.bulkCreatePages([wpPage]);
+      const ts = new Date().toISOString();
+
+      if (result.created.length > 0) {
+        const created = result.created[0];
+        const slug = (created as any).slug ?? page.slug;
+        deployment.log.push({ ts, slug, status: 'ok', wp_page_id: created.id });
+        deployment.pages_created++;
+        db.prepare(
+          `UPDATE generated_pages SET wp_page_id = ?, status = 'deployed', updated_at = ? WHERE project_id = ? AND slug = ?`
+        ).run(created.id, ts, projectId, slug);
+        logger.info(`Deployed: ${slug} → WP ID ${created.id}`);
+      } else if (result.failed.length > 0) {
+        const failed = result.failed[0];
+        deployment.log.push({ ts, slug: page.slug, status: 'failed', message: failed.error });
+        deployment.pages_failed++;
+        logger.warn(`Failed to deploy ${page.slug}: ${failed.error}`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.error(`Deploy error for ${page.slug}: ${msg}`);
+      deployment.log.push({ ts: new Date().toISOString(), slug: page.slug, status: 'failed', message: msg });
+      deployment.pages_failed++;
+    }
+
+    // Persist progress after each page
     db.prepare(
       `UPDATE deployments SET pages_created = ?, pages_failed = ?, log = ? WHERE id = ?`
     ).run(deployment.pages_created, deployment.pages_failed, JSON.stringify(deployment.log), deployId);
