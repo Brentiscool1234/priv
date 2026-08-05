@@ -340,6 +340,15 @@ class ISM_Api_Router {
 			update_option( 'irents_theme_css', $body['theme_css'] );
 		}
 
+		// Static front page — sets WP to show a specific page as homepage.
+		if ( ! empty( $body['front_page_id'] ) ) {
+			$front_page_id = absint( $body['front_page_id'] );
+			if ( get_post( $front_page_id ) ) {
+				update_option( 'show_on_front', 'page' );
+				update_option( 'page_on_front', $front_page_id );
+			}
+		}
+
 		// Logo: expects an attachment ID or URL.
 		if ( ! empty( $body['logo_attachment_id'] ) ) {
 			$logo_id = absint( $body['logo_attachment_id'] );

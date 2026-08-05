@@ -120,6 +120,14 @@ export async function deployPages(
       }
     }
 
+    // Inject internal links into HTML before sending to WordPress
+    if (processedPage.internal_links?.length && processedPage.content_html) {
+      processedPage = {
+        ...processedPage,
+        content_html: injectInternalLinks(processedPage.content_html, processedPage.internal_links, wpUrl),
+      };
+    }
+
     const wpPage = pageToWPData(processedPage, profile);
 
     try {
@@ -152,6 +160,30 @@ export async function deployPages(
     db.prepare(
       `UPDATE deployments SET pages_created = ?, pages_failed = ?, log = ? WHERE id = ?`
     ).run(deployment.pages_created, deployment.pages_failed, JSON.stringify(deployment.log), deployId);
+  }
+
+  // ── Post-deploy: nav menu + static front page ─────────────────────────────
+  // Re-fetch pages with fresh wp_page_id values after all updates
+  const deployedRows = db
+    .prepare(`SELECT * FROM generated_pages WHERE project_id = ? AND wp_page_id IS NOT NULL`)
+    .all(projectId) as Record<string, unknown>[];
+  const deployedPages = deployedRows.map(deserializePage);
+
+  try {
+    await buildNavMenu(deployedPages, client, wpUrl);
+    logger.info('Navigation menu built and assigned');
+  } catch (menuErr) {
+    logger.warn('Nav menu creation failed (non-fatal)', { menuErr });
+  }
+
+  try {
+    const homePage = deployedPages.find((p) => p.page_type === 'homepage');
+    if (homePage?.wp_page_id) {
+      await client.pushSettings({ front_page_id: homePage.wp_page_id });
+      logger.info(`Static front page set to WP ID ${homePage.wp_page_id}`);
+    }
+  } catch (fpErr) {
+    logger.warn('Front page setting failed (non-fatal)', { fpErr });
   }
 
   // ── Finalize ───────────────────────────────────────────────────────────────
@@ -236,4 +268,78 @@ function pageToWPData(page: GeneratedPage, _profile: BusinessProfile): WPPageDat
     schema_json: page.schema_json,
     status: 'publish',
   };
+}
+
+function injectInternalLinks(
+  html: string,
+  links: GeneratedPage['internal_links'],
+  wpUrl: string
+): string {
+  if (!links?.length) return html;
+  let result = html;
+  for (const link of links) {
+    if (!link.anchor_text || !link.slug) continue;
+    const url = `${wpUrl.replace(/\/+$/, '')}/${link.slug}`;
+    // Skip if already linked
+    if (result.includes(`href="${url}"`)) continue;
+    // Replace first bare occurrence of the anchor text (case-insensitive)
+    const escaped = link.anchor_text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    result = result.replace(
+      new RegExp(escaped, 'i'),
+      `<a href="${url}">${link.anchor_text}</a>`
+    );
+  }
+  return result;
+}
+
+async function buildNavMenu(
+  pages: GeneratedPage[],
+  client: WordPressClient,
+  wpUrl: string
+): Promise<void> {
+  const base = wpUrl.replace(/\/+$/, '');
+  const items: import('../types').MenuItem[] = [];
+  let order = 1;
+
+  const byType = (type: GeneratedPage['page_type']) => pages.filter((p) => p.page_type === type && p.wp_page_id);
+
+  // Home
+  const home = byType('homepage')[0];
+  if (home) {
+    items.push({ id: 'home', title: 'Home', page_id: home.wp_page_id, order: order++ });
+  }
+
+  // Services parent + children
+  const services = byType('service');
+  const serviceLocations = byType('service_location');
+  if (services.length > 0 || serviceLocations.length > 0) {
+    items.push({ id: 'services', title: 'Services', url: `${base}/services`, order: order++ });
+    for (const p of services) {
+      items.push({ title: p.h1 ?? p.slug, page_id: p.wp_page_id, parent: 'services', order: order++ });
+    }
+    for (const p of serviceLocations) {
+      items.push({ title: p.h1 ?? p.slug, page_id: p.wp_page_id, parent: 'services', order: order++ });
+    }
+  }
+
+  // Locations parent + children
+  const locations = byType('location');
+  if (locations.length > 0) {
+    items.push({ id: 'locations', title: 'Areas Served', url: `${base}/locations`, order: order++ });
+    for (const p of locations) {
+      items.push({ title: p.h1 ?? p.slug, page_id: p.wp_page_id, parent: 'locations', order: order++ });
+    }
+  }
+
+  // Utility pages
+  const about = byType('about')[0];
+  if (about) items.push({ title: 'About Us', page_id: about.wp_page_id, order: order++ });
+  const faq = byType('faq')[0];
+  if (faq) items.push({ title: 'FAQ', page_id: faq.wp_page_id, order: order++ });
+  const contact = byType('contact')[0];
+  if (contact) items.push({ title: 'Contact', page_id: contact.wp_page_id, order: order++ });
+
+  if (items.length === 0) return;
+
+  await client.createMenu('Main Navigation', items, 'primary');
 }

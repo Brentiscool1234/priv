@@ -97,8 +97,8 @@ export class WordPressClient {
 
   // ─── Menu Management ─────────────────────────────────────────────────────
 
-  async createMenu(name: string, items: MenuItem[]): Promise<void> {
-    const res = await this.request('POST', '/wp-json/irents/v1/menus', { name, items });
+  async createMenu(name: string, items: MenuItem[], location = 'primary'): Promise<void> {
+    const res = await this.request('POST', '/wp-json/irents/v1/menus', { name, items, location });
 
     if (!res.ok) {
       const body = await res.text();

@@ -223,9 +223,12 @@ export interface BulkResult {
 }
 
 export interface MenuItem {
+  id?: string;
   title: string;
-  url: string;
-  parent?: number;
+  url?: string;
+  page_id?: number;
+  parent?: string;
+  order?: number;
 }
 
 export interface StatusResponse {
