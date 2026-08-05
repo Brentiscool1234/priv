@@ -21,6 +21,7 @@ type PipelineState = {
   briefs: number;
   content_done: number;
   content_total: number;
+  content_generating: number;
   deployed: number;
   wp_connected: boolean;
   wp_url: string;
@@ -58,7 +59,8 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
         briefs: (briefs as any[]).length,
         content_done: contentArr.filter((p: any) => p.status === 'done' || p.content_html).length,
         content_total: contentArr.length,
-        deployed: contentArr.filter((p: any) => p.status === 'deployed').length,
+        content_generating: contentArr.filter((p: any) => p.status === 'generating').length,
+        deployed: contentArr.filter((p: any) => p.wp_page_id).length,
         wp_connected: (wpSt as any).connected ?? false,
         wp_url: (wpSt as any).wp_url ?? (project as any).wordpress_url ?? '',
       });
@@ -67,9 +69,33 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
     }
   }, [id]);
 
+  // Initial load
+  useEffect(() => { load(); }, [load]);
+
+  // Auto-poll whenever content is generating — starts on mount if already in progress,
+  // starts after kicking off generation, and stops when all pages are done/failed.
   useEffect(() => {
-    load();
-  }, [load]);
+    if (pipeline === null) return;
+
+    if (pipeline.content_generating > 0) {
+      if (pollRef.current) return; // already polling
+      pollRef.current = setInterval(() => {
+        load();
+      }, 3000);
+    } else {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    }
+  }, [pipeline?.content_generating, load]);
+
+  // Clear interval on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   const addLog = (step: string, status: LogEntry['status'], message: string): string => {
     const entry: LogEntry = { id: Date.now().toString(), step, status, message, ts: new Date().toISOString() };
@@ -103,42 +129,33 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
     runStep('sitemap', 'Generate Sitemap', async () => {
       const result = await api.sitemap.generate(id) as any;
       await api.sitemap.approveAll(id);
-      return `Generated ${result.count ?? 0} pages and approved all.`;
+      return `Generated ${result.generated ?? result.count ?? 0} pages.`;
     });
 
   const handleGenerateBriefs = () =>
     runStep('briefs', 'Generate Briefs', async () => {
       const result = await api.briefs.generate(id) as any;
+      await api.briefs.approveAll(id);
       return `Generated ${result.generated ?? 0} briefs.`;
     });
 
-  const handleGenerateContent = () =>
-    runStep('content', 'Generate Content', async () => {
+  // Non-blocking: just queue the job and let auto-polling show progress
+  const handleGenerateContent = async () => {
+    if (isRunning || (pipeline?.content_generating ?? 0) > 0) return;
+    setStepStatus((s) => ({ ...s, content: 'running' }));
+    const logId = addLog('Generate Content', 'running', 'Queuing...');
+    try {
       const result = await api.content.generate(id) as any;
-      const queued = result.queued ?? 0;
-
-      // Poll until all content is done (backend generates async)
-      await new Promise<void>((resolve, reject) => {
-        let attempts = 0;
-        pollRef.current = setInterval(async () => {
-          attempts++;
-          try {
-            const pages = await api.content.list(id) as any[];
-            const done = pages.filter((p: any) => p.status === 'done' || p.content_html).length;
-            setPipeline((prev) => prev ? { ...prev, content_done: done, content_total: pages.length } : prev);
-            if (done >= queued || attempts > 120) {
-              clearInterval(pollRef.current!);
-              resolve();
-            }
-          } catch {
-            clearInterval(pollRef.current!);
-            reject(new Error('Lost connection while generating content'));
-          }
-        }, 3000);
-      });
-
-      return `Content generated for ${queued} pages.`;
-    });
+      updateLog(logId, 'running', `Generating ${result.queued ?? 0} pages in background — progress updates automatically.`);
+      setStepStatus((s) => ({ ...s, content: 'done' }));
+      // load() will detect generating pages and auto-start polling
+      await load();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed';
+      updateLog(logId, 'error', msg);
+      setStepStatus((s) => ({ ...s, content: 'error' }));
+    }
+  };
 
   const handleDeploy = () =>
     runStep('deploy', 'Deploy to WordPress', async () => {
@@ -169,6 +186,11 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
     );
   }
 
+  const contentIsGenerating = (pipeline?.content_generating ?? 0) > 0;
+  const contentProgress = pipeline
+    ? `${pipeline.content_done}/${pipeline.content_total || pipeline.briefs}`
+    : undefined;
+
   const steps = [
     {
       key: 'sitemap',
@@ -196,12 +218,13 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
       key: 'content',
       label: 'Generate Content',
       description: 'Write full HTML content for each page using AI.',
-      count: pipeline ? `${pipeline.content_done}/${pipeline.content_total || pipeline.briefs}` : undefined,
+      count: contentProgress,
       unit: 'pages written',
       ready: (pipeline?.briefs ?? 0) > 0,
-      done: (pipeline?.content_done ?? 0) > 0 && pipeline?.content_done === pipeline?.content_total,
+      done: (pipeline?.content_done ?? 0) > 0 && pipeline?.content_done === pipeline?.content_total && !contentIsGenerating,
       action: handleGenerateContent,
-      buttonLabel: (pipeline?.content_done ?? 0) > 0 ? 'Regenerate' : 'Generate Content',
+      buttonLabel: contentIsGenerating ? 'Running...' : (pipeline?.content_done ?? 0) > 0 ? 'Regenerate' : 'Generate Content',
+      isGenerating: contentIsGenerating,
     },
     {
       key: 'deploy',
@@ -209,7 +232,7 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
       description: 'Push all generated pages to your WordPress site.',
       count: pipeline?.deployed,
       unit: 'pages deployed',
-      ready: (pipeline?.content_done ?? 0) > 0,
+      ready: (pipeline?.content_done ?? 0) > 0 && !contentIsGenerating,
       done: (pipeline?.deployed ?? 0) > 0,
       action: handleDeploy,
       buttonLabel: (pipeline?.deployed ?? 0) > 0 ? 'Redeploy' : 'Deploy to WordPress',
@@ -289,7 +312,7 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
       <div className="space-y-3">
         {steps.map((step, i) => {
           const status = stepStatus[step.key];
-          const running = status === 'running';
+          const running = status === 'running' || ('isGenerating' in step && step.isGenerating);
           return (
             <div
               key={step.key}
@@ -301,32 +324,48 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                     step.done ? 'bg-green-600 text-white' :
-                    running ? 'bg-blue-600 text-white animate-pulse' :
+                    running ? 'bg-blue-600 text-white' :
                     status === 'error' ? 'bg-red-600 text-white' :
                     'bg-slate-600 text-slate-300'
-                  }`}>
+                  } ${running ? 'animate-pulse' : ''}`}>
                     {step.done ? '✓' : running ? '…' : status === 'error' ? '!' : i + 1}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-white">{step.label}</span>
                       {step.count !== undefined && (
                         <span className="text-xs text-slate-400">{step.count} {step.unit}</span>
                       )}
+                      {'isGenerating' in step && step.isGenerating && (
+                        <span className="text-xs text-blue-400 animate-pulse">● generating…</span>
+                      )}
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">{step.description}</p>
+                    {'isGenerating' in step && step.isGenerating && pipeline && pipeline.content_total > 0 && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                            style={{ width: `${Math.round((pipeline.content_done / pipeline.content_total) * 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-slate-400 shrink-0">
+                          {Math.round((pipeline.content_done / pipeline.content_total) * 100)}%
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <button
                   onClick={step.action}
-                  disabled={!step.ready || isRunning}
+                  disabled={!step.ready || isRunning || ('isGenerating' in step && step.isGenerating)}
                   className={`shrink-0 px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                     step.highlight
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
                       : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
                   }`}
                 >
-                  {running ? 'Running...' : step.buttonLabel}
+                  {running && !('isGenerating' in step) ? 'Running...' : step.buttonLabel}
                 </button>
               </div>
             </div>
@@ -337,8 +376,11 @@ export default function DeployPage({ params }: { params: Promise<{ id: string }>
       {/* Log */}
       {logs.length > 0 && (
         <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-slate-700">
+          <div className="px-5 py-3 border-b border-slate-700 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-white">Activity Log</h2>
+            {contentIsGenerating && (
+              <span className="text-xs text-blue-400 animate-pulse">Auto-refreshing every 3s</span>
+            )}
           </div>
           <div className="divide-y divide-slate-700/50 max-h-64 overflow-y-auto">
             {logs.map((log) => (
