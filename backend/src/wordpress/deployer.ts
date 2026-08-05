@@ -47,9 +47,10 @@ export async function deployPages(
       .all(projectId, ...opts.page_ids) as Record<string, unknown>[];
     pages = rows.map(deserializePage);
   } else {
-    const statusClause = opts.force ? '' : `AND status != 'deployed'`;
+    // Include both 'done' (never deployed) and 'deployed' (update existing WP pages).
+    // This way every deploy run is idempotent — the WP plugin upserts by slug.
     const rows = db
-      .prepare(`SELECT * FROM generated_pages WHERE project_id = ? AND status = 'done' ${statusClause}`)
+      .prepare(`SELECT * FROM generated_pages WHERE project_id = ? AND status IN ('done', 'deployed')`)
       .all(projectId) as Record<string, unknown>[];
     pages = rows.map(deserializePage);
   }
