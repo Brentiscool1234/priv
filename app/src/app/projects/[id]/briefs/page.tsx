@@ -58,7 +58,8 @@ export default function BriefsPage({ params }: { params: Promise<{ id: string }>
     setMessage(null);
     try {
       const result = await api.briefs.generate(id) as any;
-      setMessage({ text: `Generated ${result.generated ?? 0} briefs.` });
+      await api.briefs.approveAll(id);
+      setMessage({ text: `Generated and approved ${result.generated ?? 0} briefs. Ready for content generation.` });
       await load();
     } catch (err) {
       setMessage({ text: err instanceof Error ? err.message : 'Failed', error: true });

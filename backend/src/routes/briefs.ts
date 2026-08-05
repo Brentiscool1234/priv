@@ -70,6 +70,12 @@ briefsRouter.post('/generate', (req, res) => {
   res.json({ generated: generated.length, briefs: generated });
 });
 
+briefsRouter.post('/approve-all', (req, res) => {
+  const db = getDb();
+  const result = db.prepare("UPDATE page_briefs SET status = 'approved' WHERE project_id = ? AND status = 'pending'").run(( req.params as any).id);
+  res.json({ approved: result.changes });
+});
+
 briefsRouter.get('/:briefId', (req, res) => {
   const db = getDb();
   const brief = db.prepare('SELECT * FROM page_briefs WHERE id = ? AND project_id = ?').get(( req.params as any).briefId, ( req.params as any).id);

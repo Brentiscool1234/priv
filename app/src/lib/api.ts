@@ -86,6 +86,8 @@ export const api = {
     list: (projectId: string) => apiFetch<unknown[]>(`/api/projects/${projectId}/briefs`),
     generate: (projectId: string) =>
       apiFetch<unknown>(`/api/projects/${projectId}/briefs/generate`, { method: 'POST' }),
+    approveAll: (projectId: string) =>
+      apiFetch<unknown>(`/api/projects/${projectId}/briefs/approve-all`, { method: 'POST' }),
   },
 
   content: {

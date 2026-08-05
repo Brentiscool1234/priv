@@ -48,7 +48,7 @@ export default function SitemapPage({ params }: { params: Promise<{ id: string }
     try {
       const result = await api.sitemap.generate(id) as any;
       await api.sitemap.approveAll(id);
-      setMessage({ text: `Generated ${result.count ?? 0} pages.` });
+      setMessage({ text: `Generated ${result.generated ?? result.count ?? 0} pages.` });
       await load();
     } catch (err) {
       setMessage({ text: err instanceof Error ? err.message : 'Failed', error: true });
