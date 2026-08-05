@@ -89,7 +89,6 @@ const AUTHORITY_CSS = `
 
 /* ── Hero ── */
 .au-theme section:first-of-type{background:#1a1a2e;min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 5vw;width:100%;position:relative;overflow:hidden;border-bottom:4px solid #c8a951}
-.au-theme section:first-of-type::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8a951' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
 .au-theme section:first-of-type h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(2.25rem,5vw,4rem);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.01em;margin-bottom:1.5rem;max-width:820px;position:relative;z-index:1}
 .au-theme section:first-of-type h1::after{content:'';display:block;width:72px;height:3px;background:#c8a951;margin:.75rem auto 0}
 .au-theme section:first-of-type p{font-size:1.15rem;color:#a5accc;max-width:580px;margin:1.5rem auto 2.5rem;position:relative;z-index:1}
@@ -153,7 +152,6 @@ const LOCAL_CSS = `
 
 /* ── Hero ── */
 .lc-theme section:first-of-type{background:linear-gradient(160deg,#14532d 0%,#166534 50%,#15803d 100%);min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 5vw;width:100%;position:relative;overflow:hidden;border-radius:0 0 48px 48px}
-.lc-theme section:first-of-type::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:48px;background:#fffef7;border-radius:48px 48px 0 0;pointer-events:none}
 .lc-theme section:first-of-type h1{font-size:clamp(2.5rem,5.5vw,4.25rem);font-weight:800;color:#fff;line-height:1.15;letter-spacing:-.02em;margin-bottom:1.5rem;max-width:820px;text-shadow:0 2px 12px rgba(0,0,0,.15)}
 .lc-theme section:first-of-type p{font-size:1.2rem;color:#bbf7d0;max-width:560px;margin:0 auto 2.5rem}
 .lc-theme section:first-of-type a.cta-button{position:relative;z-index:1}
@@ -235,22 +233,98 @@ export const THEMES: Record<ThemeName, ThemeMeta> = {
   },
 };
 
-export function wrapWithTheme(html: string, theme: ThemeName): string {
-  const t = THEMES[theme];
-  // Embed CSS for standalone rendering (app preview). On WordPress the global
-  // irents_theme_css option handles it — this is just a safety net.
-  return `<div class="${t.wrapperClass}"><style>${t.css}</style>\n${html}\n</div>`;
+export function wrapWithTheme(html: string, _theme: ThemeName): string {
+  // On WordPress the ISM theme handles all styling via its own CSS.
+  // No wrapper div or inline CSS needed — just return the raw content.
+  return html;
 }
 
 export function getThemePromptGuidelines(): string {
-  return `HTML STRUCTURE RULES (required):
-- Wrap each content block in a <section> element
-- First <section> is the hero — put H1, intro paragraph, and CTA button here
-- Subsequent <section> elements are content sections with H2 headings
-- Use <h2> for section titles, <h3> for sub-points
-- Use <p> for paragraphs, <ul><li> for lists
-- CTA links MUST use: <a href="/contact" class="cta-button">CTA TEXT</a>
-- FAQ section MUST use: <dl><dt>Question?</dt><dd>Answer.</dd></dl>
-- Do NOT add inline styles, class names (except cta-button), or IDs
-- Keep HTML semantic and clean — the theme CSS handles all visual styling`;
+  return `━━━ HTML STRUCTURE RULES (ISM Theme) ━━━
+Wrap every page in sections using these exact class names — the ISM WordPress theme
+CSS is built around them. Do NOT deviate from this structure.
+
+HERO SECTION (first section always):
+<section class="ism-hero">
+  <div class="ism-hero__inner">
+    <span class="ism-eyebrow">Keyword or City phrase</span>
+    <h1 class="ism-hero__title">Primary keyword headline</h1>
+    <p class="ism-hero__lead">2–3 sentence compelling intro. Use primary keyword.</p>
+    <div class="ism-hero__actions">
+      <a class="ism-btn ism-btn--primary" href="/contact">Get a Free Quote →</a>
+      <a class="ism-btn ism-btn--secondary" href="#services">Our Services</a>
+    </div>
+  </div>
+</section>
+
+STANDARD CONTENT SECTION:
+<section class="ism-section">
+  <div class="ism-container">
+    <span class="ism-eyebrow">Section Label</span>
+    <h2>Section Heading</h2>
+    <p>Content...</p>
+  </div>
+</section>
+
+BENEFITS SECTION (ul list):
+<section class="ism-section ism-benefits">
+  <div class="ism-container">
+    <h2>Benefits heading</h2>
+    <ul>
+      <li><strong>Benefit title.</strong> 2-sentence explanation of this benefit.</li>
+    </ul>
+  </div>
+</section>
+
+PROCESS STEPS (ol list):
+<section class="ism-section ism-process">
+  <div class="ism-container">
+    <h2>How It Works</h2>
+    <ol class="ism-process-list">
+      <li><strong>Step Name.</strong> 3 sentences: what happens, how long it takes, what the customer experiences.</li>
+    </ol>
+  </div>
+</section>
+
+REVIEWS SECTION:
+<section class="ism-section ism-reviews">
+  <div class="ism-container">
+    <h2>What Clients Say</h2>
+    <div class="ism-reviews__grid">
+      <div class="ism-review-card">
+        <div class="ism-review-card__stars">★★★★★</div>
+        <blockquote class="ism-review-card__quote">"Customer quote here."</blockquote>
+        <div><span class="ism-review-card__name">First Name</span> <span class="ism-review-card__location">City</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+FAQ SECTION:
+<section class="ism-section ism-faq">
+  <div class="ism-container">
+    <h2>Frequently Asked Questions</h2>
+    <div class="ism-faq__list">
+      <dl>
+        <dt>Question here?</dt>
+        <dd>3–4 sentence answer.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+CTA BANNER (last section always):
+<section class="ism-cta-banner">
+  <div class="ism-cta-banner__inner">
+    <h2>Compelling closing headline</h2>
+    <p>Restate core value prop. Primary keyword. Urgency or guarantee.</p>
+    <a class="ism-btn ism-btn--primary" href="/contact">Get a Free Quote →</a>
+  </div>
+</section>
+
+RULES:
+- Use ONLY the class names shown above. No other classes or inline styles.
+- Every section needs ism-eyebrow + h2 (except hero and cta-banner)
+- <p> tags inside ism-container are automatically styled — no extra classes needed
+- Images: do NOT add img tags — images are injected automatically`;
 }
