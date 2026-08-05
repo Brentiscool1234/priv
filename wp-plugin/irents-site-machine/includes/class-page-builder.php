@@ -47,6 +47,7 @@ class ISM_Page_Builder {
 
 		$this->save_meta( $page_id, $data );
 		$this->set_template( $page_id, $data['template'] ?? '' );
+		$this->clear_builder_meta( $page_id );
 
 		return [
 			'id'   => $page_id,
@@ -87,6 +88,8 @@ class ISM_Page_Builder {
 		if ( ! empty( $data['template'] ) ) {
 			$this->set_template( $page_id, $data['template'] );
 		}
+
+		$this->clear_builder_meta( $page_id );
 
 		return [
 			'id'   => $page_id,
@@ -233,6 +236,31 @@ class ISM_Page_Builder {
 		// WordPress stores just the filename (relative to theme or plugin).
 		$template = sanitize_file_name( $template );
 		update_post_meta( $page_id, '_wp_page_template', $template );
+	}
+
+	/**
+	 * Remove page-builder meta so previous designs don't override our content.
+	 * Clears Elementor, Divi, Beaver Builder, and WPBakery data if present.
+	 *
+	 * @param int $page_id Post ID.
+	 */
+	private function clear_builder_meta( int $page_id ): void {
+		$builder_keys = [
+			'_elementor_edit_mode',
+			'_elementor_data',
+			'_elementor_page_settings',
+			'_elementor_template_type',
+			'_et_pb_use_builder',
+			'_et_pb_old_content',
+			'_et_builder_version',
+			'fl_builder_enabled',
+			'fl_builder_data',
+			'_wpb_shortcodes_custom_css',
+		];
+
+		foreach ( $builder_keys as $key ) {
+			delete_post_meta( $page_id, $key );
+		}
 	}
 
 	/**

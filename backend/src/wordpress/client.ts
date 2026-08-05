@@ -145,6 +145,7 @@ export class WordPressClient {
       title: data.title,
       content: data.content,
       status: data.status ?? 'publish',
+      template: data.template ?? 'page-full-width.php',
       meta: {
         _yoast_wpseo_title: data.meta_title ?? '',
         _yoast_wpseo_metadesc: data.meta_description ?? '',

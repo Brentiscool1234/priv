@@ -60,6 +60,7 @@ class ISM_Template_Manager {
 	 */
 	public static function get_plugin_templates( array $templates ): array {
 		$plugin_templates = [
+			'page-full-width.php'       => __( 'iRents — Full Width',       'irents-site-machine' ),
 			'page-homepage.php'         => __( 'iRents — Homepage',         'irents-site-machine' ),
 			'page-service.php'          => __( 'iRents — Service',          'irents-site-machine' ),
 			'page-location.php'         => __( 'iRents — Location',         'irents-site-machine' ),

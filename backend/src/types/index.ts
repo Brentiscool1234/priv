@@ -214,6 +214,7 @@ export interface WPPageData {
   schema_json?: object[];
   status?: 'publish' | 'draft';
   parent_id?: number;
+  template?: string;
 }
 
 export interface BulkResult {
