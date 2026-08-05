@@ -9,7 +9,7 @@ export async function generatePageImages(
   brief: PageBrief,
   profile: BusinessProfile
 ): Promise<PageImage[]> {
-  if (process.env.GENERATE_IMAGES === 'false') return [];
+  if (process.env.GENERATE_IMAGES !== 'true') return [];
 
   const images: PageImage[] = [];
   const needsContent = brief.page_type === 'service' || brief.page_type === 'service_location';

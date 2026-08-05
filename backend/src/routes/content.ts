@@ -110,6 +110,15 @@ contentRouter.post('/generate', async (req, res) => {
           logger.info(`Content gen locale ${locale}: ${results.filter((r) => r.success).length}/${results.length} succeeded`);
         } catch (err) {
           logger.error(`Content generation error for locale ${locale}`, { err });
+          // Mark all pages in this locale as failed so they don't stay stuck in 'generating'
+          const failedAt = new Date().toISOString();
+          try {
+            runTransaction(db, () => {
+              for (const brief of localeBriefs) {
+                db.prepare("UPDATE generated_pages SET status = 'failed', updated_at = ? WHERE brief_id = ?").run(failedAt, brief.id);
+              }
+            });
+          } catch { /* ignore secondary db error */ }
         }
       }
     });
