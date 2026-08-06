@@ -819,3 +819,131 @@ body.irents-theme-local .ism-cta-banner p { color: #bbf7d0; }
   body.irents-theme-local .ism-hero { border-radius: 0 0 32px 32px; }
   body.irents-theme-local .ism-cta-banner { border-radius: 32px 32px 0 0; }
 }
+
+/* ============================================================
+   WordPress Site Chrome — Header / Nav / Footer
+   Applied via body.irents-theme-* class (set on deploy).
+   These rules override the active WP theme's styling so the
+   header & footer match the chosen ISM design even before
+   running Deploy (as long as the plugin zip has been uploaded).
+   ============================================================ */
+
+/* ── Horizon ── */
+body.irents-theme-horizon { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif; margin: 0; -webkit-font-smoothing: antialiased; }
+body.irents-theme-horizon header.site-header,
+body.irents-theme-horizon #masthead,
+body.irents-theme-horizon .site-header,
+body.irents-theme-horizon #site-header,
+body.irents-theme-horizon .ast-main-header-wrap { background: #0f172a !important; border-bottom: 1px solid #1e293b !important; box-shadow: none !important; }
+body.irents-theme-horizon .site-title a,
+body.irents-theme-horizon .site-branding a,
+body.irents-theme-horizon .ast-site-title-wrap a { color: #fff !important; font-weight: 700 !important; text-decoration: none !important; }
+body.irents-theme-horizon .site-description { color: #64748b !important; }
+body.irents-theme-horizon .main-navigation,
+body.irents-theme-horizon #site-navigation,
+body.irents-theme-horizon .ast-main-navigation { background: #0f172a !important; }
+body.irents-theme-horizon .main-navigation a,
+body.irents-theme-horizon #site-navigation a,
+body.irents-theme-horizon nav.main-navigation ul li a,
+body.irents-theme-horizon .ast-menu-toggle { color: #94a3b8 !important; font-weight: 500; transition: color .2s; text-decoration: none; }
+body.irents-theme-horizon .main-navigation a:hover,
+body.irents-theme-horizon #site-navigation a:hover,
+body.irents-theme-horizon nav a:hover { color: #38bdf8 !important; }
+body.irents-theme-horizon #page { max-width: 100% !important; }
+body.irents-theme-horizon .site-content,
+body.irents-theme-horizon #content,
+body.irents-theme-horizon .content-area,
+body.irents-theme-horizon #primary { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; float: none !important; }
+body.irents-theme-horizon .entry-content,
+body.irents-theme-horizon article.page,
+body.irents-theme-horizon article.post,
+body.irents-theme-horizon .post-content,
+body.irents-theme-horizon .entry,
+body.irents-theme-horizon .ast-article-single { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
+body.irents-theme-horizon .page-header,
+body.irents-theme-horizon .entry-header { display: none !important; }
+body.irents-theme-horizon footer.site-footer,
+body.irents-theme-horizon .site-footer,
+body.irents-theme-horizon #colophon,
+body.irents-theme-horizon #footer { background: #0f172a !important; color: #64748b !important; border-top: 1px solid #1e293b !important; padding: 60px 5vw !important; }
+body.irents-theme-horizon footer a,
+body.irents-theme-horizon .site-footer a,
+body.irents-theme-horizon #colophon a { color: #38bdf8 !important; text-decoration: none; }
+body.irents-theme-horizon .site-info,
+body.irents-theme-horizon footer p { color: #475569; font-size: .875rem; }
+
+/* ── Authority ── */
+body.irents-theme-authority { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background: #fdfbf7; -webkit-font-smoothing: antialiased; }
+body.irents-theme-authority header.site-header,
+body.irents-theme-authority #masthead,
+body.irents-theme-authority .site-header,
+body.irents-theme-authority #site-header,
+body.irents-theme-authority .ast-main-header-wrap { background: #1a1a2e !important; border-bottom: 3px solid #c8a951 !important; box-shadow: none !important; }
+body.irents-theme-authority .site-title a,
+body.irents-theme-authority .site-branding a,
+body.irents-theme-authority .ast-site-title-wrap a { color: #fff !important; font-family: Georgia, serif !important; font-weight: 700 !important; text-decoration: none !important; }
+body.irents-theme-authority .site-description { color: #a5accc !important; }
+body.irents-theme-authority .main-navigation,
+body.irents-theme-authority #site-navigation { background: #1a1a2e !important; }
+body.irents-theme-authority .main-navigation a,
+body.irents-theme-authority #site-navigation a,
+body.irents-theme-authority nav.main-navigation ul li a { color: #a5accc !important; font-weight: 500; text-decoration: none; letter-spacing: .04em; font-size: .875rem; text-transform: uppercase; }
+body.irents-theme-authority .main-navigation a:hover,
+body.irents-theme-authority #site-navigation a:hover { color: #c8a951 !important; }
+body.irents-theme-authority #page { max-width: 100% !important; }
+body.irents-theme-authority .site-content,
+body.irents-theme-authority #content,
+body.irents-theme-authority .content-area,
+body.irents-theme-authority #primary { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; float: none !important; }
+body.irents-theme-authority .entry-content,
+body.irents-theme-authority article.page,
+body.irents-theme-authority article.post,
+body.irents-theme-authority .ast-article-single { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
+body.irents-theme-authority .page-header,
+body.irents-theme-authority .entry-header { display: none !important; }
+body.irents-theme-authority footer.site-footer,
+body.irents-theme-authority .site-footer,
+body.irents-theme-authority #colophon,
+body.irents-theme-authority #footer { background: #13121e !important; color: #a5accc !important; border-top: 3px solid #c8a951 !important; padding: 60px 5vw !important; }
+body.irents-theme-authority footer a,
+body.irents-theme-authority .site-footer a { color: #c8a951 !important; text-decoration: none; }
+body.irents-theme-authority .site-info,
+body.irents-theme-authority footer p { color: #6b6885; font-size: .875rem; }
+
+/* ── Local ── */
+body.irents-theme-local { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #fffef7; -webkit-font-smoothing: antialiased; }
+body.irents-theme-local header.site-header,
+body.irents-theme-local #masthead,
+body.irents-theme-local .site-header,
+body.irents-theme-local #site-header,
+body.irents-theme-local .ast-main-header-wrap { background: #15803d !important; border-bottom: none !important; box-shadow: 0 2px 8px rgba(0,0,0,.12) !important; }
+body.irents-theme-local .site-title a,
+body.irents-theme-local .site-branding a,
+body.irents-theme-local .ast-site-title-wrap a { color: #fff !important; font-weight: 800 !important; text-decoration: none !important; }
+body.irents-theme-local .site-description { color: #bbf7d0 !important; }
+body.irents-theme-local .main-navigation,
+body.irents-theme-local #site-navigation { background: #15803d !important; }
+body.irents-theme-local .main-navigation a,
+body.irents-theme-local #site-navigation a,
+body.irents-theme-local nav.main-navigation ul li a { color: #dcfce7 !important; font-weight: 600; text-decoration: none; transition: color .2s; }
+body.irents-theme-local .main-navigation a:hover,
+body.irents-theme-local #site-navigation a:hover { color: #fef08a !important; }
+body.irents-theme-local #page { max-width: 100% !important; }
+body.irents-theme-local .site-content,
+body.irents-theme-local #content,
+body.irents-theme-local .content-area,
+body.irents-theme-local #primary { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; float: none !important; }
+body.irents-theme-local .entry-content,
+body.irents-theme-local article.page,
+body.irents-theme-local article.post,
+body.irents-theme-local .ast-article-single { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
+body.irents-theme-local .page-header,
+body.irents-theme-local .entry-header { display: none !important; }
+body.irents-theme-local footer.site-footer,
+body.irents-theme-local .site-footer,
+body.irents-theme-local #colophon,
+body.irents-theme-local #footer { background: #14532d !important; color: #bbf7d0 !important; border-top: none !important; padding: 60px 5vw !important; }
+body.irents-theme-local footer a,
+body.irents-theme-local .site-footer a { color: #fde68a !important; text-decoration: none; }
+body.irents-theme-local .site-info,
+body.irents-theme-local footer p { color: #86efac; font-size: .875rem; }
