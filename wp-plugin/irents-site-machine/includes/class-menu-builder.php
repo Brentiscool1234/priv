@@ -118,15 +118,24 @@ class ISM_Menu_Builder {
 	 * @param string $location Theme location slug.
 	 */
 	private function assign_location( int $menu_id, string $location ): void {
-		$locations = get_registered_nav_menus();
+		$registered  = get_registered_nav_menus();
+		$assignments = get_theme_mod( 'nav_menu_locations', [] );
+		$assigned    = false;
 
-		if ( ! array_key_exists( $location, $locations ) ) {
-			// Location not registered — silently skip.
-			return;
+		// Try the requested location first.
+		if ( array_key_exists( $location, $registered ) ) {
+			$assignments[ $location ] = $menu_id;
+			$assigned = true;
 		}
 
-		$assignments = get_theme_mod( 'nav_menu_locations', [] );
-		$assignments[ $location ] = $menu_id;
+		// If the requested slot wasn't found, fall back to every registered location
+		// so the menu appears regardless of which slug the active theme uses.
+		if ( ! $assigned ) {
+			foreach ( array_keys( $registered ) as $slug ) {
+				$assignments[ $slug ] = $menu_id;
+			}
+		}
+
 		set_theme_mod( 'nav_menu_locations', $assignments );
 	}
 }
