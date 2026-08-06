@@ -27,6 +27,7 @@ require_once ISM_PLUGIN_DIR . 'includes/class-menu-builder.php';
 require_once ISM_PLUGIN_DIR . 'includes/class-sitemap-handler.php';
 require_once ISM_PLUGIN_DIR . 'includes/class-template-manager.php';
 require_once ISM_PLUGIN_DIR . 'includes/class-api-router.php';
+require_once ISM_PLUGIN_DIR . 'includes/class-footer-builder.php';
 
 // ---------------------------------------------------------------------------
 // Activation / Deactivation hooks
@@ -73,6 +74,9 @@ add_action( 'wp_enqueue_scripts', 'ism_enqueue_frontend_assets' );
 
 // Template loader: map page-type meta to physical template files.
 add_filter( 'template_include', array( 'ISM_Template_Manager', 'resolve_template' ) );
+
+// Custom branded footer (replaces theme footer on ISM-deployed sites).
+ISM_Footer_Builder::init();
 
 // Admin.
 add_action( 'admin_menu', 'ism_register_admin_menu' );

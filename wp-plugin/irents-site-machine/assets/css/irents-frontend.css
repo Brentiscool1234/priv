@@ -865,12 +865,7 @@ body.irents-theme-horizon .entry-header { display: none !important; }
 body.irents-theme-horizon footer.site-footer,
 body.irents-theme-horizon .site-footer,
 body.irents-theme-horizon #colophon,
-body.irents-theme-horizon #footer { background: #0f172a !important; color: #64748b !important; border-top: 1px solid #1e293b !important; padding: 60px 5vw !important; }
-body.irents-theme-horizon footer a,
-body.irents-theme-horizon .site-footer a,
-body.irents-theme-horizon #colophon a { color: #38bdf8 !important; text-decoration: none; }
-body.irents-theme-horizon .site-info,
-body.irents-theme-horizon footer p { color: #475569; font-size: .875rem; }
+body.irents-theme-horizon #footer { display: none !important; }
 
 /* ── Authority ── */
 body.irents-theme-authority { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background: #fdfbf7; -webkit-font-smoothing: antialiased; }
@@ -904,11 +899,7 @@ body.irents-theme-authority .entry-header { display: none !important; }
 body.irents-theme-authority footer.site-footer,
 body.irents-theme-authority .site-footer,
 body.irents-theme-authority #colophon,
-body.irents-theme-authority #footer { background: #13121e !important; color: #a5accc !important; border-top: 3px solid #c8a951 !important; padding: 60px 5vw !important; }
-body.irents-theme-authority footer a,
-body.irents-theme-authority .site-footer a { color: #c8a951 !important; text-decoration: none; }
-body.irents-theme-authority .site-info,
-body.irents-theme-authority footer p { color: #6b6885; font-size: .875rem; }
+body.irents-theme-authority #footer { display: none !important; }
 
 /* ── Local ── */
 body.irents-theme-local { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #fffef7; -webkit-font-smoothing: antialiased; }
@@ -942,8 +933,101 @@ body.irents-theme-local .entry-header { display: none !important; }
 body.irents-theme-local footer.site-footer,
 body.irents-theme-local .site-footer,
 body.irents-theme-local #colophon,
-body.irents-theme-local #footer { background: #14532d !important; color: #bbf7d0 !important; border-top: none !important; padding: 60px 5vw !important; }
-body.irents-theme-local footer a,
-body.irents-theme-local .site-footer a { color: #fde68a !important; text-decoration: none; }
-body.irents-theme-local .site-info,
-body.irents-theme-local footer p { color: #86efac; font-size: .875rem; }
+body.irents-theme-local #footer { display: none !important; }
+
+/* ============================================================
+   ISM Custom Footer  (#ism-site-footer)
+   Rendered by ISM_Footer_Builder, replaces the theme footer.
+   ============================================================ */
+
+/* Shared structure */
+#ism-site-footer {
+  width: 100%;
+  box-sizing: border-box;
+}
+#ism-site-footer .ism-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 5vw 48px;
+}
+#ism-site-footer .ism-footer__brand {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+#ism-site-footer .ism-footer__logo {
+  max-height: 48px;
+  max-width: 180px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 1rem;
+}
+#ism-site-footer .ism-footer__site-name {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: .75rem;
+}
+#ism-site-footer .ism-footer__tagline {
+  font-size: .9rem;
+  opacity: .75;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+#ism-site-footer .ism-footer__contact {
+  margin: .35rem 0;
+  font-size: .9rem;
+}
+#ism-site-footer .ism-footer__nav {
+  flex: 0 0 auto;
+}
+#ism-site-footer .ism-footer__nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+#ism-site-footer .ism-footer__bottom {
+  border-top-width: 1px;
+  border-top-style: solid;
+  padding: 20px 5vw;
+  text-align: center;
+  font-size: .8125rem;
+}
+#ism-site-footer .ism-footer__bottom p { margin: 0; }
+
+@media (max-width: 600px) {
+  #ism-site-footer .ism-footer__inner { flex-direction: column; gap: 2rem; padding: 40px 24px 32px; }
+  #ism-site-footer .ism-footer__bottom { padding: 16px 24px; }
+}
+
+/* Horizon */
+body.irents-theme-horizon #ism-site-footer { background: #0f172a; color: #64748b; }
+body.irents-theme-horizon #ism-site-footer .ism-footer__site-name { color: #fff; }
+body.irents-theme-horizon #ism-site-footer .ism-footer__contact a,
+body.irents-theme-horizon #ism-site-footer .ism-footer__nav a { color: #38bdf8; text-decoration: none; transition: color .2s; }
+body.irents-theme-horizon #ism-site-footer .ism-footer__contact a:hover,
+body.irents-theme-horizon #ism-site-footer .ism-footer__nav a:hover { color: #7dd3fc; }
+body.irents-theme-horizon #ism-site-footer .ism-footer__bottom { border-top-color: #1e293b; color: #475569; }
+
+/* Authority */
+body.irents-theme-authority #ism-site-footer { background: #13121e; color: #a5accc; }
+body.irents-theme-authority #ism-site-footer .ism-footer__site-name { color: #fff; font-family: Georgia, serif; }
+body.irents-theme-authority #ism-site-footer .ism-footer__contact a,
+body.irents-theme-authority #ism-site-footer .ism-footer__nav a { color: #c8a951; text-decoration: none; transition: color .2s; }
+body.irents-theme-authority #ism-site-footer .ism-footer__contact a:hover,
+body.irents-theme-authority #ism-site-footer .ism-footer__nav a:hover { color: #e2c97e; }
+body.irents-theme-authority #ism-site-footer .ism-footer__bottom { border-top-color: #2a2740; color: #6b6885; }
+
+/* Local */
+body.irents-theme-local #ism-site-footer { background: #14532d; color: #bbf7d0; }
+body.irents-theme-local #ism-site-footer .ism-footer__site-name { color: #fff; }
+body.irents-theme-local #ism-site-footer .ism-footer__contact a,
+body.irents-theme-local #ism-site-footer .ism-footer__nav a { color: #fde68a; text-decoration: none; transition: color .2s; }
+body.irents-theme-local #ism-site-footer .ism-footer__contact a:hover,
+body.irents-theme-local #ism-site-footer .ism-footer__nav a:hover { color: #fff; }
+body.irents-theme-local #ism-site-footer .ism-footer__bottom { border-top-color: #166534; color: #86efac; }

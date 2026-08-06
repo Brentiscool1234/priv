@@ -108,6 +108,14 @@ export class WordPressClient {
     logger.info(`Created WP menu: ${name}`);
   }
 
+  async pushProject(data: { business_name?: string; phone?: string; email?: string; tagline?: string; city?: string; state?: string }): Promise<void> {
+    const res = await this.request('POST', '/wp-json/irents/v1/project', data);
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Failed to push project data: HTTP ${res.status} – ${body}`);
+    }
+  }
+
   async pushSettings(data: Record<string, unknown>): Promise<void> {
     const res = await this.request('POST', '/wp-json/irents/v1/settings', data);
     if (!res.ok) {

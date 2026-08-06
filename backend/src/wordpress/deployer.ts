@@ -95,6 +95,36 @@ export async function deployPages(
     logger.warn('Could not push theme CSS before deployment (non-fatal)', { cssErr });
   }
 
+  // ── Push project/profile data (used by ISM footer builder) ───────────────
+  try {
+    await client.pushProject({
+      business_name: profile.business_name ?? '',
+      phone: profile.phone ?? '',
+      email: profile.email ?? '',
+      tagline: profile.description ?? '',
+    });
+    logger.info('Project data pushed to WordPress');
+  } catch (projErr) {
+    logger.warn('Could not push project data to WordPress (non-fatal)', { projErr });
+  }
+
+  // ── Upload logo if stored as a data URI ───────────────────────────────────
+  if (profile.logo_url?.startsWith('data:')) {
+    try {
+      const commaIdx = profile.logo_url.indexOf(',');
+      const header = profile.logo_url.slice(0, commaIdx);
+      const data_b64 = profile.logo_url.slice(commaIdx + 1);
+      const mime_type = header.match(/:(.*?);/)?.[1] ?? 'image/png';
+      const ext = mime_type.split('/')[1] ?? 'png';
+      const { media_id, url: wpLogoUrl } = await client.uploadMedia(`ism-logo.${ext}`, data_b64, mime_type);
+      await client.pushSettings({ logo_attachment_id: media_id });
+      db.prepare(`UPDATE business_profiles SET logo_url = ? WHERE project_id = ?`).run(wpLogoUrl, projectId);
+      logger.info(`Logo uploaded: ${wpLogoUrl}`);
+    } catch (logoErr) {
+      logger.warn('Logo upload failed (non-fatal)', { logoErr });
+    }
+  }
+
   // ── Deploy one page at a time ─────────────────────────────────────────────
   // Sending pages individually avoids PHP memory exhaustion on shared hosting
   // and gives a clear per-page error if something goes wrong.

@@ -112,6 +112,7 @@ export default function NewProjectPage() {
   // Step 5: Theme
   const [theme, setTheme] = useState<ThemeName>('horizon');
   const [previewTheme, setPreviewTheme] = useState<ThemeName | null>(null);
+  const [logoDataUrl, setLogoDataUrl] = useState('');
 
   // Step 6: WordPress Connection
   const [wpUrl, setWpUrl] = useState('');
@@ -196,6 +197,7 @@ export default function NewProjectPage() {
           booking_url: bookingUrl || undefined,
           years_in_business: yearsInBusiness ? Number(yearsInBusiness) : undefined,
           tone,
+          logo_url: logoDataUrl || undefined,
         },
       });
 
@@ -515,6 +517,41 @@ export default function NewProjectPage() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-white mb-1">Choose Your Theme</h2>
             <p className="text-sm text-slate-400 mb-4">This controls how every generated page looks on your WordPress site.</p>
+            {/* Logo upload */}
+            <div className="border border-slate-700 rounded-lg p-4 bg-slate-900">
+              <label className={labelClass}>Logo <span className="text-slate-500 font-normal">(optional — uploaded to WordPress on deploy)</span></label>
+              <div className="flex items-center gap-3 mt-2">
+                {logoDataUrl && (
+                  <div className="relative shrink-0">
+                    <img src={logoDataUrl} alt="Logo preview" className="h-10 max-w-[120px] object-contain rounded border border-slate-600 bg-slate-800 p-1" />
+                    <button
+                      type="button"
+                      onClick={() => setLogoDataUrl('')}
+                      className="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs leading-none"
+                    >×</button>
+                  </div>
+                )}
+                <label className="cursor-pointer inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 bg-slate-800 border border-slate-600 px-3 py-2 rounded-md transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  {logoDataUrl ? 'Change Logo' : 'Upload Logo'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => setLogoDataUrl((ev.target?.result as string) ?? '');
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
+              </div>
+            </div>
+
             <div className="grid gap-4">
               {(Object.values(THEMES) as typeof THEMES[ThemeName][]).map((t) => (
                 <div
