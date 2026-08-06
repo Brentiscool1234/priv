@@ -492,3 +492,330 @@
     font-size: 0.8125rem;
   }
 }
+
+/* ============================================================
+   ISM Page Components — shared structure
+   (theme colours applied via body.irents-theme-* below)
+   ============================================================ */
+
+/* Hero */
+.ism-hero {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 5vw;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+.ism-hero .ism-figure--hero {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+.ism-hero .ism-figure--hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .16;
+  display: block;
+}
+.ism-hero__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+.ism-eyebrow {
+  display: block;
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  margin-bottom: 1rem;
+}
+.ism-hero__title {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.ism-hero__lead {
+  font-size: 1.2rem;
+  max-width: 580px;
+  margin: 0 auto;
+}
+.ism-hero__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* Buttons */
+.ism-btn {
+  display: inline-block;
+  padding: 14px 36px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none !important;
+  transition: all .2s;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+/* Sections */
+.ism-section {
+  padding: 96px 5vw;
+  width: 100%;
+}
+.ism-container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.ism-section p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+.ism-section ul,
+.ism-section ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.ism-section li {
+  margin-bottom: .5rem;
+}
+
+/* Content image */
+.ism-figure--content {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  line-height: 0;
+}
+.ism-figure--content img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Process steps */
+.ism-process-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: steps;
+  margin: 1.5rem 0 0;
+}
+.ism-process-list li {
+  counter-increment: steps;
+  padding: 0 0 2rem 4.5rem;
+  position: relative;
+  margin-left: 1.25rem;
+}
+.ism-process-list li:last-child { border-left: none; }
+.ism-process-list li::before {
+  content: counter(steps);
+  position: absolute;
+  left: -1.375rem;
+  top: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Review cards */
+.ism-reviews__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.ism-review-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+.ism-review-card__stars {
+  font-size: 1.25rem;
+  margin-bottom: .75rem;
+  letter-spacing: .1em;
+}
+.ism-review-card__quote {
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.65;
+}
+.ism-review-card__name { font-weight: 700; }
+.ism-review-card__location { font-size: .875rem; display: block; margin-top: .2rem; }
+
+/* FAQ */
+.ism-faq__list { margin-top: 1.5rem; }
+.ism-faq__list dl { border-radius: 12px; overflow: hidden; margin-bottom: 1rem; }
+.ism-faq__list dt { padding: 16px 24px; font-weight: 600; }
+.ism-faq__list dd { padding: 16px 24px; margin: 0; line-height: 1.7; }
+
+/* CTA Banner */
+.ism-cta-banner {
+  padding: 96px 5vw;
+  text-align: center;
+  width: 100%;
+}
+.ism-cta-banner__inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.ism-cta-banner h2 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+  letter-spacing: -.02em;
+}
+.ism-cta-banner p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .ism-hero { min-height: 75vh; padding: 80px 24px; }
+  .ism-section { padding: 64px 24px; }
+  .ism-cta-banner { padding: 64px 24px; }
+  .ism-process-list li { padding-left: 3rem; }
+  .ism-hero__actions { flex-direction: column; align-items: center; }
+}
+
+/* ============================================================
+   ISM Theme: Horizon  (body.irents-theme-horizon)
+   ============================================================ */
+body.irents-theme-horizon .ism-hero {
+  background: linear-gradient(150deg, #0f172a 0%, #0c1e3a 55%, #0a2952 100%);
+}
+body.irents-theme-horizon .ism-eyebrow { color: #38bdf8; }
+body.irents-theme-horizon .ism-hero__lead { color: #94a3b8; }
+body.irents-theme-horizon .ism-btn { border-radius: 8px; }
+body.irents-theme-horizon .ism-btn--primary { background: #0ea5e9; color: #fff !important; box-shadow: 0 4px 20px rgba(14,165,233,.35); }
+body.irents-theme-horizon .ism-btn--primary:hover { background: #0284c7; transform: translateY(-2px); }
+body.irents-theme-horizon .ism-btn--secondary { background: transparent; color: #94a3b8 !important; border: 2px solid #334155; }
+body.irents-theme-horizon .ism-btn--secondary:hover { color: #38bdf8 !important; border-color: #38bdf8; }
+body.irents-theme-horizon .ism-section { background: #fff; }
+body.irents-theme-horizon .ism-section:nth-of-type(even) { background: #f8fafc; }
+body.irents-theme-horizon .ism-section .ism-eyebrow { color: #0ea5e9; }
+body.irents-theme-horizon .ism-section h2 { font-size: clamp(1.75rem,3vw,2.25rem); font-weight: 700; color: #0f172a; letter-spacing: -.015em; margin-bottom: 0; }
+body.irents-theme-horizon .ism-section h2::after { content: ''; display: block; width: 44px; height: 3px; background: #0ea5e9; border-radius: 2px; margin-top: .75rem; margin-bottom: 1.5rem; }
+body.irents-theme-horizon .ism-section h3 { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 2rem 0 .5rem; }
+body.irents-theme-horizon .ism-section p { color: #475569; }
+body.irents-theme-horizon .ism-section ul,
+body.irents-theme-horizon .ism-section ol { color: #475569; }
+body.irents-theme-horizon .ism-section li::marker { color: #0ea5e9; }
+body.irents-theme-horizon .ism-section a { color: #0ea5e9; }
+body.irents-theme-horizon .ism-process-list li { color: #475569; border-left: 2px solid #e2e8f0; }
+body.irents-theme-horizon .ism-process-list li::before { background: #0ea5e9; color: #fff; box-shadow: 0 0 0 4px #fff; }
+body.irents-theme-horizon .ism-review-card { background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+body.irents-theme-horizon .ism-review-card__stars { color: #f59e0b; }
+body.irents-theme-horizon .ism-review-card__quote { color: #475569; }
+body.irents-theme-horizon .ism-review-card__name { color: #0f172a; }
+body.irents-theme-horizon .ism-review-card__location { color: #94a3b8; }
+body.irents-theme-horizon .ism-faq__list dl { border: 1px solid #e2e8f0; }
+body.irents-theme-horizon .ism-faq__list dt { background: #f1f5f9; color: #0f172a; border-top: 1px solid #e2e8f0; }
+body.irents-theme-horizon .ism-faq__list dt:first-of-type { border-top: none; }
+body.irents-theme-horizon .ism-faq__list dd { color: #475569; border-top: 1px solid #e2e8f0; }
+body.irents-theme-horizon .ism-cta-banner { background: linear-gradient(135deg, #0f172a 0%, #0a2952 100%); }
+body.irents-theme-horizon .ism-cta-banner p { color: #94a3b8; }
+
+/* ============================================================
+   ISM Theme: Authority  (body.irents-theme-authority)
+   ============================================================ */
+body.irents-theme-authority .ism-hero {
+  background: #1a1a2e;
+  border-bottom: 4px solid #c8a951;
+}
+body.irents-theme-authority .ism-hero__title { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2.25rem,5vw,4rem); letter-spacing: -.01em; }
+body.irents-theme-authority .ism-eyebrow { color: #c8a951; }
+body.irents-theme-authority .ism-hero__lead { color: #a5accc; }
+body.irents-theme-authority .ism-btn { border-radius: 4px; text-transform: uppercase; letter-spacing: .08em; }
+body.irents-theme-authority .ism-btn--primary { background: #c8a951; color: #1a1a2e !important; box-shadow: 0 4px 16px rgba(200,169,81,.3); }
+body.irents-theme-authority .ism-btn--primary:hover { background: #b8953f; }
+body.irents-theme-authority .ism-btn--secondary { background: transparent; color: #a5accc !important; border: 2px solid #3d3a50; }
+body.irents-theme-authority .ism-btn--secondary:hover { color: #c8a951 !important; border-color: #c8a951; }
+body.irents-theme-authority .ism-section { background: #fdfbf7; }
+body.irents-theme-authority .ism-section:nth-of-type(even) { background: #f5f0e8; }
+body.irents-theme-authority .ism-section .ism-eyebrow { color: #c8a951; }
+body.irents-theme-authority .ism-section h2 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.6rem,2.8vw,2.2rem); font-weight: 700; color: #1a1a2e; padding-bottom: .75rem; border-bottom: 2px solid #e5ddc8; margin-bottom: 1rem; }
+body.irents-theme-authority .ism-section h3 { font-size: 1.05rem; font-weight: 700; color: #1a1a2e; text-transform: uppercase; letter-spacing: .06em; margin: 2rem 0 .5rem; }
+body.irents-theme-authority .ism-section p { color: #3d3a50; font-size: 1.05rem; }
+body.irents-theme-authority .ism-section ul,
+body.irents-theme-authority .ism-section ol { color: #3d3a50; }
+body.irents-theme-authority .ism-section li::marker { color: #c8a951; }
+body.irents-theme-authority .ism-section a { color: #c8a951; }
+body.irents-theme-authority .ism-process-list li { color: #3d3a50; border-left: 2px solid #e5ddc8; }
+body.irents-theme-authority .ism-process-list li::before { background: #c8a951; color: #1a1a2e; box-shadow: 0 0 0 4px #fdfbf7; }
+body.irents-theme-authority .ism-review-card { background: #fdfbf7; border: 1px solid #e5ddc8; border-left: 4px solid #c8a951; border-radius: 4px; }
+body.irents-theme-authority .ism-review-card__stars { color: #c8a951; }
+body.irents-theme-authority .ism-review-card__quote { font-family: Georgia, serif; color: #3d3a50; }
+body.irents-theme-authority .ism-review-card__name { color: #1a1a2e; }
+body.irents-theme-authority .ism-review-card__location { color: #6b6885; }
+body.irents-theme-authority .ism-faq__list dl { margin-bottom: 1rem; }
+body.irents-theme-authority .ism-faq__list dt { font-family: Georgia, serif; font-weight: 700; color: #1a1a2e; border-bottom: 1px solid #e5ddc8; padding-left: 0; padding-right: 0; }
+body.irents-theme-authority .ism-faq__list dd { color: #4a4768; padding-left: 1.25rem; border-left: 3px solid #c8a951; padding-top: 12px; padding-bottom: 20px; }
+body.irents-theme-authority .ism-cta-banner { background: #13121e; border-top: 4px solid #c8a951; }
+body.irents-theme-authority .ism-cta-banner h2 { font-family: Georgia, serif; }
+body.irents-theme-authority .ism-cta-banner p { color: #a5accc; }
+
+/* ============================================================
+   ISM Theme: Local  (body.irents-theme-local)
+   ============================================================ */
+body.irents-theme-local .ism-hero {
+  background: linear-gradient(160deg, #14532d 0%, #166534 50%, #15803d 100%);
+  border-radius: 0 0 48px 48px;
+}
+body.irents-theme-local .ism-hero__title { text-shadow: 0 2px 12px rgba(0,0,0,.15); }
+body.irents-theme-local .ism-eyebrow { color: #86efac; }
+body.irents-theme-local .ism-hero__lead { color: #bbf7d0; }
+body.irents-theme-local .ism-btn { border-radius: 9999px; font-weight: 800; }
+body.irents-theme-local .ism-btn--primary { background: #f59e0b; color: #1c1917 !important; box-shadow: 0 4px 20px rgba(245,158,11,.35); }
+body.irents-theme-local .ism-btn--primary:hover { background: #d97706; transform: translateY(-2px); }
+body.irents-theme-local .ism-btn--secondary { background: transparent; color: #bbf7d0 !important; border: 2px solid rgba(255,255,255,.3); }
+body.irents-theme-local .ism-btn--secondary:hover { color: #fff !important; border-color: #fff; }
+body.irents-theme-local .ism-section { background: #fffef7; }
+body.irents-theme-local .ism-section:nth-of-type(even) { background: #fef9e7; }
+body.irents-theme-local .ism-section .ism-eyebrow { color: #15803d; }
+body.irents-theme-local .ism-section h2 { font-size: clamp(1.75rem,3vw,2.25rem); font-weight: 800; color: #14532d; letter-spacing: -.015em; display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
+body.irents-theme-local .ism-section h2::before { content: ''; flex-shrink: 0; width: 6px; height: 28px; background: #f59e0b; border-radius: 3px; }
+body.irents-theme-local .ism-section h3 { font-size: 1.1rem; font-weight: 700; color: #15803d; margin: 2rem 0 .5rem; }
+body.irents-theme-local .ism-section p { color: #44403c; font-size: 1.05rem; }
+body.irents-theme-local .ism-section ul,
+body.irents-theme-local .ism-section ol { color: #44403c; }
+body.irents-theme-local .ism-section li { padding-left: .25rem; }
+body.irents-theme-local .ism-section li::marker { color: #16a34a; }
+body.irents-theme-local .ism-section a { color: #15803d; }
+body.irents-theme-local .ism-process-list li { color: #44403c; border-left: 2px solid #bbf7d0; }
+body.irents-theme-local .ism-process-list li::before { background: #f59e0b; color: #1c1917; box-shadow: 0 0 0 4px #fffef7; }
+body.irents-theme-local .ism-review-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+body.irents-theme-local .ism-review-card__stars { color: #f59e0b; }
+body.irents-theme-local .ism-review-card__quote { color: #44403c; }
+body.irents-theme-local .ism-review-card__name { color: #14532d; font-weight: 800; }
+body.irents-theme-local .ism-review-card__location { color: #78716c; }
+body.irents-theme-local .ism-faq__list { display: grid; gap: 1rem; }
+body.irents-theme-local .ism-faq__list dl { background: #fff; border-radius: 12px; padding: 1rem 1.5rem; }
+body.irents-theme-local .ism-faq__list dt { font-weight: 700; color: #14532d; font-size: 1.05rem; padding-bottom: 6px; border-bottom: 2px solid #bbf7d0; margin-bottom: .5rem; padding-left: 0; }
+body.irents-theme-local .ism-faq__list dd { color: #44403c; padding-left: 1.25rem; border-left: 4px solid #f59e0b; padding-top: 0; padding-bottom: 0; }
+body.irents-theme-local .ism-cta-banner { background: linear-gradient(160deg, #14532d, #15803d); border-radius: 48px 48px 0 0; margin-top: 2rem; }
+body.irents-theme-local .ism-cta-banner p { color: #bbf7d0; }
+
+@media (max-width: 768px) {
+  body.irents-theme-local .ism-hero { border-radius: 0 0 32px 32px; }
+  body.irents-theme-local .ism-cta-banner { border-radius: 32px 32px 0 0; }
+}
